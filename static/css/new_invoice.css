@@ -1,0 +1,75 @@
+ /* Style tambahan untuk halaman new_invoice */
+ .invoice-container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.invoice-container h2 {
+    text-align: center;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.item-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.item-row input {
+    width: calc(33.33% - 10px); /* 3 kolom untuk item, quantity, dan harga */
+}
+
+.btn {
+    background-color: #34a0a4;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn:hover {
+    background-color: #7f8c8d;
+    transform: scale(1.05);
+}
+
+.total {
+    text-align: right;
+    font-size: 1.2em;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+.back-btn {
+    background-color: #34a0a4;
+    margin-bottom: 15px;
+}
+
+.back-btn:hover {
+    background-color: #7f8c8d;
+    transform: scale(1.05);
+}

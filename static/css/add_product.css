@@ -1,0 +1,53 @@
+ /* Basic styling for the form */
+ body {
+    background: #d4e6e7; /* Change to your preferred background color */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+}
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+h1 {
+    text-align: center;
+    color: #34a0a4;
+
+}
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+button {
+    background-color: #5db3b6;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 10px;
+}
+button:hover {
+    background-color: #34a0a4;
+}
+/* Styling for the "Back to Product Page" button */
+.back-btn {
+    background-color: #5db3b6; /* Different color for the back button */
+    text-align: center;
+}
+.back-btn:hover {
+    background-color: #34a0a4; /* Darker shade on hover */
+}

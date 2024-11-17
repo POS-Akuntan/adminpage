@@ -1,0 +1,379 @@
+/* General Styles */
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #d4e6e7;
+    /* Updated to match product page background */
+}
+
+/* Typography */
+h1,
+h2,
+h3 {
+    color: #34a0a4;
+    text-align: center;
+}
+
+h3 {
+    color: #5db3b6;
+}
+
+p {
+    color: #0f575a;
+}
+
+/* Header */
+header {
+    background-color: #34a0a4;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.nav-menu {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+}
+
+.nav-menu li {
+    margin: 0 10px;
+    background-color: #e5f4f6;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.nav-menu li a {
+    color: #033537;
+    text-decoration: none;
+}
+
+.nav-menu li:hover {
+    background-color: #d7f2f4;
+    transform: scale(1.05);
+}
+
+/* User Profile Dropdown */
+.user-profile {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.user-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+button {
+    background-color: #3F72AF;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #5db3b6;
+    transform: scale(1.05);
+}
+
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-size: 16px;
+    padding-left: 5px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+    transform: scale(1.05);
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Product Management Styles */
+.container {
+    padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.product-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.product-header h1 {
+    font-size: 24px;
+}
+
+.export-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -10px;
+}
+
+.add-product-btn,
+.export-csv-btn {
+    background-color: #298588;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-left: 10px;
+}
+
+.add-product-btn:hover,
+.export-csv-btn:hover {
+    background-color: #1c7376;
+    transform: scale(1.05);
+}
+
+.add-product-btn:focus,
+.export-csv-btn:focus {
+    outline: none;
+}
+
+/* Search and Filter Section */
+.search-filter {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+#search-bar {
+    width: 70%;
+    padding: 10px;
+    font-size: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+::placeholder {
+    color: #99babb;
+}
+
+#sort-options {
+    width: 25%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: #0f575a;
+}
+
+/* Product Table */
+#product-table {
+    width: 100%;
+    margin: 0 0 40px 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.row {
+    display: table-row;
+    background: #f6f6f6;
+}
+
+.row:nth-of-type(odd) {
+    background: #e9e9e9;
+}
+
+.row.header {
+    font-weight: 900;
+    color: #ffffff;
+    background: #ea6153;
+}
+
+.row.blue {
+    background: #34a0a4;
+}
+
+.cell {
+    padding: 6px 12px;
+    display: table-cell;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination a {
+    color: #112d4e;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .3s;
+    border: 1px solid #ddd;
+    margin: 0 4px;
+    border-radius: 5px;
+}
+
+.pagination a.active {
+    background-color: #34a0a4;
+    color: white;
+    border: 1px solid #3f72af;
+}
+
+.pagination a:hover:not(.active) {
+    background-color: #ddd;
+}
+
+/* Button Styles for Edit and Delete */
+.btn-edit,
+.btn-delete {
+    background: none;
+    border: none;
+    color: #000000;
+    cursor: pointer;
+    font-size: 18px;
+    margin: 0 5px;
+}
+
+.btn-edit:hover {
+    color: #28a745;
+    /* Green color on hover */
+    transform: scale(1.05);
+    background-color: transparent;
+}
+
+.btn-delete:hover {
+    color: #dc3545;
+    /* Red color on hover */
+    transform: scale(1.05);
+    background-color: transparent;
+}
+
+
+/* Responsivitas */
+.menu-toggle {
+    display: none;
+    font-size: 20px;
+    background-color: transparent;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+/* Responsif untuk perangkat mobile */
+@media (max-width: 768px) {
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    /* Sembunyikan navigasi dan tampilkan tombol menu */
+    .nav-menu {
+        display: none;
+        /* Sembunyikan menu pada perangkat mobile */
+        flex-direction: column;
+        width: 100%;
+        background-color: #34a0a4;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        z-index: 1;
+        padding: 0;
+    }
+
+    .nav-menu li {
+        margin: 0;
+        padding: 15px;
+        border-bottom: 1px solid #e5f4f6;
+    }
+
+    .menu-toggle {
+        display: block;
+        /* Tampilkan tombol menu pada perangkat mobile */
+    }
+
+    /* Tampilkan menu dropdown saat kelas 'show' ditambahkan */
+    .nav-menu.show {
+        display: flex;
+    }
+
+    /* Untuk menutup dropdown dengan klik di luar */
+    .nav-menu-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.4);
+        display: none;
+    }
+
+    .nav-menu-background.show {
+        display: block;
+    }
+
+    .statistics {
+        flex-direction: column;
+    }
+
+    .stat-card {
+        margin-bottom: 20px;
+    }
+
+    .data-section {
+        flex-direction: column;
+    }
+}

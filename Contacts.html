@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Akuntansi</title>
+    <link rel="stylesheet" href="static/css/contact.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <header>
+        <!-- Tombol menu untuk perangkat mobile -->
+        <button class="menu-toggle" onclick="toggleMenu()">☰ Menu</button>
+        <!-- Navigasi (disembunyikan pada perangkat mobile) -->
+        <nav>
+          <ul class="nav-menu">
+            <li><a href="index.html">Dashboard</a></li>
+            <li><a href="Business.html" >Business</a></li>
+            <li><a href="Accounting.html">Accounting</a></li>
+            <li><a href="Product.html">Product</a></li>
+            <li style="background-color: #97ced1;"><a href="Contacts.html" style="color: rgb(255, 255, 255);">Contact Us</a></li>
+          </ul>
+        </nav>
+        <!-- Profil pengguna -->
+        <div class="user-profile">
+            <img src="static/img/ImageAcc.png" alt="User Profile" class="user-image" id="user-avatar" />
+            <div class="dropdown" id="profile-dropdown">
+                <button onclick="toggleDropdown()" class="dropbtn">▼</button>
+                <div class="dropdown-content" id="dropdown-content">
+                    <a href="profile.html">Profile</a>
+                    <a href="https://itungin.github.io/">Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Contact Form Section -->
+    <div class="background">
+        <div class="container">
+            <div class="screen">
+                <div class="screen-header">
+                    <div class="screen-header-left">
+                        <div class="screen-header-button close"></div>
+                        <div class="screen-header-button maximize"></div>
+                        <div class="screen-header-button minimize"></div>
+                    </div>
+                    <div class="screen-header-right">
+                        <div class="screen-header-ellipsis"></div>
+                        <div class="screen-header-ellipsis"></div>
+                        <div class="screen-header-ellipsis"></div>
+                    </div>
+                </div>
+                <div class="screen-body">
+                    <div class="screen-body-item left">
+                        <div class="app-title">
+                            <span>CONTACT</span>
+                            <span>US</span>
+                        </div>
+                        <div class="app-contact">
+                            PHONE NUMBER : +62 81 314 928 595 <br>
+                            EMAIL : NasgorTapiAkuntan@gmail.com <br>
+                            ADDRESS : Jl. Sarijadi, Jawa Barat, Indonesia
+                        </div>
+                    </div>
+                    <div class="screen-body-item">
+                        <div class="app-form" id="contact-form">
+                            <div class="app-form-group">
+                                <input class="app-form-control" placeholder="NAME" id="name">
+                            </div>
+                            <div class="app-form-group">
+                                <input class="app-form-control" placeholder="EMAIL" id="email">
+                            </div>
+                            <div class="app-form-group">
+                                <input class="app-form-control" placeholder="+62" id="contact_no">
+                            </div>
+                            <div class="app-form-group message">
+                                <input class="app-form-control" placeholder="MESSAGE" id="message">
+                            </div>
+                            <div class="app-form-group buttons">
+                                <button class="app-form-button" id="send-button">SEND</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EmailJS Script Integration -->
+     <script>
+        function toggleMenu() {
+            const navMenu = document.querySelector('.nav-menu');
+            navMenu.classList.toggle('show');
+        }
+        
+        function toggleDropdown() {
+            const dropdownContent = document.getElementById('dropdown-content');
+            dropdownContent.classList.toggle('show');
+        }
+     </script>
+    <script type="module" type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("wmNQGJMIJ-uMpTpzZ"); // Ganti dengan EmailJS User ID Anda
+        })();
+
+        // Function to handle form submission
+        document.getElementById('send-button').addEventListener('click', function(event) {
+            event.preventDefault(); // Mencegah reload halaman setelah submit
+
+            // Ambil nilai dari input fields
+            var name = document.getElementById('name').value;
+            var email = document.getElementById('email').value;
+            var contactNo = document.getElementById('contact_no').value;
+            var message = document.getElementById('message').value;
+
+            // Validasi form
+            if (!name || !email || !contactNo || !message) {
+                alert("Harap isi semua kolom.");
+                return;
+            }
+
+            // Template email parameter
+            var templateParams = {
+                from_name: name,
+                from_email: email,
+                contact_no: contactNo,
+                message: message,
+            };
+
+            // Kirim email melalui EmailJS
+            emailjs.send('service_qzuzwz2', 'template_x3n7vja', templateParams) // Ganti 'template_id' dengan Template ID Anda
+                .then(function(response) {
+                    alert('Pesan berhasil terkirim!');
+                    console.log('SUCCESS!', response.status, response.text);
+                }, function(error) {
+                    alert('Gagal mengirim pesan, coba lagi.');
+                    console.log('FAILED...', error);
+                });
+        });
+    </script>
+</body>
+</html>
