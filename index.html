@@ -522,6 +522,7 @@
       });
       //invoice
       // Update loadInvoices to include delete button
+      // Fungsi untuk memuat invoice dari localStorage dan menampilkan di halaman
       function loadInvoices() {
         const invoices = JSON.parse(localStorage.getItem("invoices")) || [];
         const invoicesContainer = document.getElementById("invoicesOwed");
@@ -531,18 +532,27 @@
           const invoiceCard = document.createElement("div");
           invoiceCard.className = "invoice-card";
           invoiceCard.innerHTML = `
-            <p><strong>Invoice Number:</strong> ${invoice.invoiceNumber}</p>
-            <p><strong>Client Name:</strong> ${invoice.clientName}</p>
-            <p><strong>Amount:</strong> $${invoice.totalAmount}</p>
-            <p><strong>Due Date:</strong> ${invoice.invoiceDate}</p>
-            <button type="button" class="delete-btn" onclick="deleteInvoice(${index})">
-                    <i class="fas fa-trash-alt"></i> <!-- Ikon tempat sampah untuk delete -->
-                </button>
-          `;
+      <p><strong>Invoice Number:</strong> ${invoice.invoiceNumber}</p>
+      <p><strong>Client Name:</strong> ${invoice.clientName}</p>
+      <p><strong>Amount:</strong> $${invoice.totalAmount}</p>
+      <p><strong>Due Date:</strong> ${invoice.invoiceDate}</p>
+      <button type="button" class="delete-btn" onclick="deleteInvoice(${index})">
+        <i class="fas fa-trash-alt"></i>
+      </button>
+    `;
           invoicesContainer.appendChild(invoiceCard);
         });
       }
-      // Load invoices on page load
+
+      // Fungsi untuk menghapus invoice berdasarkan indeks
+      function deleteInvoice(index) {
+        const invoices = JSON.parse(localStorage.getItem("invoices")) || [];
+        invoices.splice(index, 1); // Hapus invoice dari array
+        localStorage.setItem("invoices", JSON.stringify(invoices)); // Simpan kembali ke localStorage
+        loadInvoices(); // Refresh daftar invoice di halaman
+      }
+
+      // Muat daftar invoice saat halaman dimuat
       window.onload = loadInvoices;
     </script>
   </body>
