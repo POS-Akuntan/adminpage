@@ -16,7 +16,7 @@ function formatRupiah(number) {
   // Array to store product data retrieved from backend
   let products = [];
   let currentPage = 1;
-  const itemsPerPage = 5; // Number of products per page
+  const itemsPerPage = 8; // Number of products per page
   
   // Function to fetch products from the backend
   // Function to fetch products from the backend
@@ -162,7 +162,7 @@ function formatRupiah(number) {
   // Function to delete a product
   async function deleteProduct(productId) {
     const result = await Swal.fire({
-      icon: "warning",
+      icon: "question",
       title: "Are you sure you want to delete this data?",
       text: "DELETE",
       showCancelButton: true,
