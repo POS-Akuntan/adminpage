@@ -23,7 +23,7 @@ function formatRupiah(number) {
   async function fetchProducts() {
     try {
       const response = await fetch(
-        "https://asia-southeast2-awangga.cloudfunctions.net/itungin/products"
+        "https://pos-gray-pi.vercel.app/api/products"
       ); // Updated URL
       products = await response.json(); // Parse the response as JSON
   
@@ -173,7 +173,7 @@ function formatRupiah(number) {
     if (result.isConfirmed) {
       try {
         const response = await fetch(
-          `https://asia-southeast2-awangga.cloudfunctions.net/itungin/products?id=${productId}`,
+          `https://pos-gray-pi.vercel.app/api/products?id=${productId}`,
           {
             method: "DELETE",
           }
@@ -249,7 +249,7 @@ function formatRupiah(number) {
   // Event listeners for adding new product and exporting to CSV
   document.getElementById("exportCsvBtn").addEventListener("click", function () {
     window.location.href =
-      "https://asia-southeast2-awangga.cloudfunctions.net/itungin/products-export-csv"; // Updated URL
+      "https://pos-gray-pi.vercel.app/api/products-export-csv"; // Updated URL
   });
   
   document.getElementById("addProductBtn").addEventListener("click", function () {
