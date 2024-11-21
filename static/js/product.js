@@ -173,7 +173,8 @@ function formatRupiah(number) {
     if (result.isConfirmed) {
       try {
         const response = await fetch(
-          `https://pos-ochre.vercel.app/api/products?id=${productId}`,
+          `https://pos-ochre.vercel.app/api/products/${productId}`,
+          
           {
             method: "DELETE",
           }
