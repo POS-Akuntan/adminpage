@@ -8,37 +8,36 @@ document.getElementById("Backproductbtn").addEventListener("click", function () 
     window.location.href = "Product.html";
 });
 
-async function fetchProductById(productId) {
+const fetchProduct = async (productId) => {
     try {
         console.log(`Fetching product with ID: ${productId}`);
-        
-        // Gunakan path parameter
         const response = await fetch(`https://pos-ochre.vercel.app/api/products/${productId}`);
         
         if (!response.ok) {
+            // Log error jika status bukan 200
             const errorText = await response.text();
+            console.error(`Fetch failed: ${response.status} - ${errorText}`);
             throw new Error(`Error ${response.status}: ${errorText}`);
         }
 
         const product = await response.json();
-        console.log("Product data fetched:", product);
-        
-        // Populate form fields
-        document.getElementById('product-name').value = product.data.name;
-        document.getElementById('product-price').value = product.data.price;
-        document.getElementById('product-category').value = product.data.category;
-        document.getElementById('product-description').value = product.data.description;
-        document.getElementById('product-stock').value = product.data.stock;
+        console.log("Product fetched successfully:", product);
 
+        // Isi data di form
+        document.getElementById("name").value = product.name;
+        document.getElementById("price").value = product.price;
+        document.getElementById("category").value = product.category;
+        document.getElementById("description").value = product.description || "";
+        document.getElementById("stock").value = product.stock;
     } catch (error) {
-        console.error('Error fetching product:', error);
+        console.error("Error fetching product:", error);
         Swal.fire({
             icon: "error",
             title: "Error",
             text: "Failed to fetch product data. Please check your connection or try again later."
         });
     }
-}
+};
 
 
 
