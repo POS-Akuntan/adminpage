@@ -11,6 +11,8 @@ document.getElementById("Backproductbtn").addEventListener("click", function () 
 async function fetchProductById(productId) {
     try {
         console.log(`Fetching product with ID: ${productId}`);
+        
+        // Gunakan path parameter
         const response = await fetch(`https://pos-ochre.vercel.app/api/products/${productId}`);
         
         if (!response.ok) {
@@ -21,6 +23,7 @@ async function fetchProductById(productId) {
         const product = await response.json();
         console.log("Product data fetched:", product);
         
+        // Populate form fields
         document.getElementById('product-name').value = product.data.name;
         document.getElementById('product-price').value = product.data.price;
         document.getElementById('product-category').value = product.data.category;
@@ -36,6 +39,7 @@ async function fetchProductById(productId) {
         });
     }
 }
+
 
 
 document.getElementById("edit-product-form").addEventListener("submit", async function(event) {
