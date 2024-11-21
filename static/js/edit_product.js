@@ -12,7 +12,7 @@ async function fetchProductById(productId) {
     try {
         console.log(`Fetching product with ID: ${productId}`);
         
-        const response = await fetch(`https://pos-ochre.vercel.app/api/product-id?id=${productId}`);
+        const response = await fetch(`https://pos-ochre.vercel.app/api/products-id?id=${productId}`);
         
         if (!response.ok) {
             const errorText = await response.text();
