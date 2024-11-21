@@ -12,7 +12,7 @@ async function fetchProductById(productId) {
     try {
         console.log(`Fetching product with ID: ${productId}`);
         
-        const response = await fetch(`https://asia-southeast2-awangga.cloudfunctions.net/itungin/product-id?id=${productId}`);
+        const response = await fetch(`https://pos-ochre.vercel.app/api/products-id?id=${productId}`);
         
         if (!response.ok) {
             const errorText = await response.text();
@@ -59,7 +59,7 @@ document.getElementById("edit-product-form").addEventListener("submit", async fu
 
     if (result.isConfirmed) {
         try {
-            const response = await fetch(`https://asia-southeast2-awangga.cloudfunctions.net/itungin/products?id=${productId}`, {
+            const response = await fetch(`https://pos-ochre.vercel.app/api/products?id=${productId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedProduct)

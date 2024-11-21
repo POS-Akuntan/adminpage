@@ -23,7 +23,7 @@ function formatRupiah(number) {
   async function fetchProducts() {
     try {
       const response = await fetch(
-        "https://pos-gray-pi.vercel.app/api/products"
+        "https://pos-ochre.vercel.app/api/products"
       ); // Updated URL
       products = await response.json(); // Parse the response as JSON
   
@@ -173,7 +173,7 @@ function formatRupiah(number) {
     if (result.isConfirmed) {
       try {
         const response = await fetch(
-          `https://pos-gray-pi.vercel.app/api/products?id=${productId}`,
+          `https://pos-ochre.vercel.app/api/products?id=${productId}`,
           {
             method: "DELETE",
           }
