@@ -11,7 +11,7 @@ document.getElementById("Backproductbtn").addEventListener("click", function () 
 async function fetchProductById(productId) {
     try {
         console.log(`Fetching product with ID: ${productId}`);
-        const response = await fetch(`https://pos-ochre.vercel.app/api/products-id/${productId}`);
+        const response = await fetch(`https://pos-ochre.vercel.app/api/products/${productId}`);
         
         if (!response.ok) {
             const errorText = await response.text();
