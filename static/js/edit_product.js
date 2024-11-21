@@ -1,6 +1,6 @@
 // Import JSCroot from the CDN
 import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11/src/sweetalert2.js";
-import {addCSS} from "https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.9/element.js";
+import { addCSS } from "https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.9/element.js";
 
 addCSS("https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.css");
 
@@ -11,8 +11,9 @@ document.getElementById("Backproductbtn").addEventListener("click", function () 
 async function fetchProductById(productId) {
     try {
         console.log(`Fetching product with ID: ${productId}`);
-        
-        const response = await fetch(`https://pos-ochre.vercel.app/api/products-id?id=${productId}`);
+
+        // URL menggunakan ID sebagai bagian dari path
+        const response = await fetch(`https://pos-ochre.vercel.app/api/products-id/${productId}`);
         
         if (!response.ok) {
             const errorText = await response.text();
@@ -59,7 +60,8 @@ document.getElementById("edit-product-form").addEventListener("submit", async fu
 
     if (result.isConfirmed) {
         try {
-            const response = await fetch(`https://pos-ochre.vercel.app/api/products?id=${productId}`, {
+            // URL menggunakan ID sebagai bagian dari path
+            const response = await fetch(`https://pos-ochre.vercel.app/api/products/${productId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedProduct)
