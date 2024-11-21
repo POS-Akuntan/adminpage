@@ -174,7 +174,6 @@ function formatRupiah(number) {
       try {
         const response = await fetch(
           `https://pos-ochre.vercel.app/api/products/${productId}`,
-          
           {
             method: "DELETE",
           }
@@ -184,10 +183,11 @@ function formatRupiah(number) {
           Swal.fire({
             icon: "success",
             title: "Deleted",
-            text: "Terhapus",
+            text: "Product has been deleted.",
           });
           fetchProducts(); // Reload the product list after deletion
         } else {
+          console.error("Failed to delete product:", response);
           Swal.fire({
             icon: "error",
             title: "Failed",
@@ -204,6 +204,7 @@ function formatRupiah(number) {
       }
     }
   }
+  
   
   
   // Search Functionality
