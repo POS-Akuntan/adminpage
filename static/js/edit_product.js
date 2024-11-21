@@ -1,27 +1,33 @@
-// Import JSCroot from the CDN
+// Import JSCroot dan SweetAlert dari CDN
 import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11/src/sweetalert2.js";
 import { addCSS } from "https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.9/element.js";
 
 addCSS("https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.css");
 
+// Fungsi kembali ke halaman product
 document.getElementById("Backproductbtn").addEventListener("click", function () {
     window.location.href = "Product.html";
 });
 
+// Fungsi untuk mengambil data produk berdasarkan ID
 const fetchProduct = async (productId) => {
     try {
-        console.log(`Fetching product with ID: ${productId}`);
+        Swal.fire({
+            title: "Loading...",
+            text: "Fetching product data...",
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         const response = await fetch(`https://pos-ochre.vercel.app/api/products/${productId}`);
-        
         if (!response.ok) {
-            // Log error jika status bukan 200
-            const errorText = await response.text();
-            console.error(`Fetch failed: ${response.status} - ${errorText}`);
-            throw new Error(`Error ${response.status}: ${errorText}`);
+            throw new Error(`Error ${response.status}: ${await response.text()}`);
         }
 
         const product = await response.json();
-        console.log("Product fetched successfully:", product);
+        Swal.close();
 
         // Isi data di form
         document.getElementById("name").value = product.name;
@@ -30,43 +36,48 @@ const fetchProduct = async (productId) => {
         document.getElementById("description").value = product.description || "";
         document.getElementById("stock").value = product.stock;
     } catch (error) {
-        console.error("Error fetching product:", error);
         Swal.fire({
             icon: "error",
             title: "Error",
-            text: "Failed to fetch product data. Please check your connection or try again later."
+            text: "Failed to fetch product data. Please try again."
         });
+        console.error(error);
     }
 };
 
-
-
+// Fungsi untuk memperbarui data produk
 document.getElementById("edit-product-form").addEventListener("submit", async function(event) {
     event.preventDefault();
 
     const productId = new URLSearchParams(window.location.search).get("id");
-    console.log("Updating product with ID:", productId);
-
     const updatedProduct = {
-        name: document.getElementById("product-name").value,
-        price: parseFloat(document.getElementById("product-price").value),
-        category: document.getElementById("product-category").value,
-        description: document.getElementById("product-description").value,
-        stock: parseInt(document.getElementById("product-stock").value, 10)
+        name: document.getElementById("name").value,
+        price: parseFloat(document.getElementById("price").value),
+        category: document.getElementById("category").value,
+        description: document.getElementById("description").value,
+        stock: parseInt(document.getElementById("stock").value, 10)
     };
 
-    // Show confirmation dialog before updating
     const result = await Swal.fire({
         icon: "warning",
-        title: "Are you sure you want to update this product?",
+        title: "Are you sure?",
+        text: "Do you want to update this product?",
         showCancelButton: true,
         confirmButtonText: "Yes, update it!",
-        cancelButtonText: "No, keep editing"
+        cancelButtonText: "No, cancel"
     });
 
     if (result.isConfirmed) {
         try {
-            // URL menggunakan ID sebagai bagian dari path
+            Swal.fire({
+                title: "Updating...",
+                text: "Please wait...",
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             const response = await fetch(`https://pos-ochre.vercel.app/api/products/${productId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -76,37 +87,35 @@ document.getElementById("edit-product-form").addEventListener("submit", async fu
             if (response.ok) {
                 Swal.fire({
                     icon: "success",
-                    title: "Updated",
+                    title: "Success",
                     text: "Product updated successfully!"
                 }).then(() => {
                     window.location.href = "Product.html";
                 });
             } else {
-                const errorText = await response.text();
-                Swal.fire({
-                    icon: "error",
-                    title: "Update Failed",
-                    text: `Failed to update product: ${errorText}`
-                });
+                throw new Error(`Error ${response.status}: ${await response.text()}`);
             }
         } catch (error) {
-            console.error("Error:", error);
             Swal.fire({
                 icon: "error",
-                title: "Error",
-                text: "An error occurred. Please try again."
+                title: "Update Failed",
+                text: "Failed to update product. Please try again."
             });
+            console.error(error);
         }
     }
 });
 
-// Initial loading function
+// Muat data produk saat halaman diload
 window.onload = function() {
     const productId = new URLSearchParams(window.location.search).get("id");
-    console.log("Product ID from URL:", productId);
     if (productId) {
-        fetchProductById(productId);
+        fetchProduct(productId);
     } else {
-        console.error('Product ID not found in URL');
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Product ID not found in URL."
+        });
     }
 };
