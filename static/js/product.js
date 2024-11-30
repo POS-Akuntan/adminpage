@@ -57,7 +57,7 @@ function formatRupiah(number) {
               <div class="cell" data-title="Unit Price">${formatRupiah(
                 product.price
               )}</div>
-              <div class="cell" data-title="Category">${product.category}</div>
+              <div class="cell" data-title="Category">${product.category_name}</div>
               <div class="cell" data-title="Description">${
                 product.description
               }</div>
@@ -213,7 +213,7 @@ function formatRupiah(number) {
     const filteredProducts = products.filter(
       (product) =>
         product.name.toLowerCase().includes(searchQuery) ||
-        product.category.toLowerCase().includes(searchQuery) ||
+        product.category_name.toLowerCase().includes(searchQuery) ||
         product.description.toLowerCase().includes(searchQuery)
     );
     renderProductTable(filteredProducts, currentPage);
@@ -229,7 +229,7 @@ function formatRupiah(number) {
       sortedProducts.sort((a, b) => a.name.localeCompare(b.name));
     } else if (sortOption === "price") {
       sortedProducts.sort((a, b) => a.price - b.price);
-    } else if (sortOption === "category") {
+    } else if (sortOption === "category_name") {
       sortedProducts.sort((a, b) => a.category.localeCompare(b.category));
     } else if (sortOption === "stock") {
       sortedProducts.sort((a, b) => a.stock - b.stock);
