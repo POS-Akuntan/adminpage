@@ -50,7 +50,7 @@ const fetchProduct = async (productId) => {
         // Isi data di form
         document.getElementById("name").value = product.name;
         document.getElementById("price").value = product.price;
-        document.getElementById("category").value = product.category_name;
+        document.getElementById("category").value = product.category;
         document.getElementById("description").value = product.description || "";
         document.getElementById("stock").value = product.stock;
     } catch (error) {
@@ -74,7 +74,7 @@ document.getElementById("edit-product-form").addEventListener("submit", async fu
     const updatedProduct = {
         name: document.getElementById("name").value,
         price: parseFloat(document.getElementById("price").value),
-        category_name: document.getElementById("category").value,
+        category: document.getElementById("category").value,
         description: document.getElementById("description").value,
         stock: parseInt(document.getElementById("stock").value, 10)
     };
