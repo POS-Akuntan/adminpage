@@ -27,11 +27,14 @@ const fetchProduct = async (productId) => {
             throw new Error("Authorization token not found. Please log in again.");
         }
 
+        // Debug: log token untuk memastikan terbaca
+        console.log("Token:", token);
+
         const response = await fetch(`https://pos-ochre.vercel.app/api/products/${productId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}` // Sertakan token di header Authorization
+                "Authorization": `Bearer ${token}` // Format Bearer <token>
             }
         });
 
@@ -59,6 +62,7 @@ const fetchProduct = async (productId) => {
         console.error(error);
     }
 };
+
 
 
 // Fungsi untuk memperbarui data produk
