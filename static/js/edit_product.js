@@ -66,6 +66,7 @@ const fetchProduct = async (productId) => {
 
 
 // Fungsi untuk memperbarui data produk
+// Fungsi untuk memperbarui data produk
 document.getElementById("edit-product-form").addEventListener("submit", async function(event) {
     event.preventDefault();
 
@@ -89,6 +90,15 @@ document.getElementById("edit-product-form").addEventListener("submit", async fu
 
     if (result.isConfirmed) {
         try {
+            // Ambil token dari localStorage
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error("Authorization token not found. Please log in again.");
+            }
+
+            // Debug: log token untuk memastikan terbaca
+            console.log("Token:", token);
+
             Swal.fire({
                 title: "Updating...",
                 text: "Please wait...",
@@ -100,7 +110,10 @@ document.getElementById("edit-product-form").addEventListener("submit", async fu
 
             const response = await fetch(`https://pos-ochre.vercel.app/api/products/${productId}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` // Format Bearer <token>
+                },
                 body: JSON.stringify(updatedProduct)
             });
 
@@ -119,12 +132,13 @@ document.getElementById("edit-product-form").addEventListener("submit", async fu
             Swal.fire({
                 icon: "error",
                 title: "Update Failed",
-                text: "Failed to update product. Please try again."
+                text: error.message || "Failed to update product. Please try again."
             });
             console.error(error);
         }
     }
 });
+
 
 // Muat data produk saat halaman diload
 window.onload = function() {
