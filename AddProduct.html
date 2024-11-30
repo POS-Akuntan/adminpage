@@ -17,7 +17,10 @@
         <input type="number" id="product-price" required />
 
         <label for="product-category_name">Category:</label>
-        <input type="text" id="product-category_name" required />
+        <!-- Dropdown untuk kategori -->
+        <select id="product-category_name" required>
+          <!-- Opsi kategori akan dimasukkan di sini secara dinamis -->
+        </select>
 
         <label for="product-description">Description:</label>
         <input type="text" id="product-description" required />
@@ -33,95 +36,119 @@
       </button>
     </div>
 
-    <script  type="module" >
-      // Import SweetAlert2 and CSS
-import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11/src/sweetalert2.js";
-import { addCSS } from "https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.9/element.js";
+    <script type="module">
+      // Import SweetAlert2 dan CSS
+      import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11/src/sweetalert2.js";
+      import { addCSS } from "https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.9/element.js";
 
-addCSS("https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.css");
+      addCSS("https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.css");
 
-document
-  .getElementById("add-product-form")
-  .addEventListener("submit", async function (event) {
-    event.preventDefault();
+      // Fungsi untuk mengambil kategori produk
+      const fetchCategories = async () => {
+        try {
+          const response = await fetch("https://pos-ochre.vercel.app/api/categories"); // Ganti dengan API yang sesuai
+          const categories = await response.json();
 
-    // Get form values
-    const productName = document.getElementById("product-name").value;
-    const productPrice = parseFloat(
-      document.getElementById("product-price").value
-    );
-    const productcategory_name = document.getElementById("product-category_name").value;
-    const productDescription = document.getElementById(
-      "product-description"
-    ).value;
-    const productStock = parseInt(
-      document.getElementById("product-stock").value,
-      10
-    );
-
-    // Create new product object
-    const newProduct = {
-      name: productName,
-      price: productPrice,
-      category_name: productcategory_name,
-      description: productDescription,
-      stock: productStock,
-    };
-
-    // Show confirmation dialog before adding the product
-    const result = await Swal.fire({
-      icon: "warning",
-      title: "Are you sure you want to add this product?",
-      showCancelButton: true,
-      confirmButtonText: "Yes, add it!",
-      cancelButtonText: "No, keep editing",
-    });
-
-    if (result.isConfirmed) {
-      try {
-        const response = await fetch(
-          "https://pos-ochre.vercel.app/api/products",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newProduct),
-          }
-        );
-
-        if (response.ok) {
-          // Show success message
-          await Swal.fire({
-            icon: "success",
-            title: "Added",
-            text: "Product added successfully!",
+          // Isi dropdown kategori dengan data kategori
+          const categorySelect = document.getElementById("product-category_name");
+          categories.forEach(category => {
+            const option = document.createElement("option");
+            option.value = category.id;  // Pastikan field ID dan Name sesuai
+            option.textContent = category.name;
+            categorySelect.appendChild(option);
           });
-          window.location.href = "Product.html";
-        } else {
-          const errorText = await response.text();
+        } catch (error) {
+          console.error("Error fetching categories:", error);
           Swal.fire({
             icon: "error",
-            title: "Add Failed",
-            text: `Failed to add product: ${errorText}`,
+            title: "Failed to load categories",
+            text: "There was an error loading the categories. Please try again."
           });
         }
-      } catch (error) {
-        console.error("Error:", error);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "An error occurred. Please try again.",
+      };
+
+      // Muat kategori saat halaman dimuat
+      window.onload = fetchCategories;
+
+      // Menangani form submit
+      document
+        .getElementById("add-product-form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          // Ambil nilai form
+          const productName = document.getElementById("product-name").value;
+          const productPrice = parseFloat(
+            document.getElementById("product-price").value
+          );
+          const productCategoryId = document.getElementById("product-category_name").value;
+          const productDescription = document.getElementById("product-description").value;
+          const productStock = parseInt(
+            document.getElementById("product-stock").value,
+            10
+          );
+
+          // Buat objek produk baru
+          const newProduct = {
+            name: productName,
+            price: productPrice,
+            category_id: productCategoryId,  // Gunakan category_id jika kategori di API berdasarkan ID
+            description: productDescription,
+            stock: productStock,
+          };
+
+          // Tampilkan konfirmasi sebelum menambah produk
+          const result = await Swal.fire({
+            icon: "warning",
+            title: "Are you sure you want to add this product?",
+            showCancelButton: true,
+            confirmButtonText: "Yes, add it!",
+            cancelButtonText: "No, keep editing",
+          });
+
+          if (result.isConfirmed) {
+            try {
+              const response = await fetch(
+                "https://pos-ochre.vercel.app/api/products",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(newProduct),
+                }
+              );
+
+              if (response.ok) {
+                // Tampilkan pesan sukses
+                await Swal.fire({
+                  icon: "success",
+                  title: "Added",
+                  text: "Product added successfully!",
+                });
+                window.location.href = "Product.html";
+              } else {
+                const errorText = await response.text();
+                Swal.fire({
+                  icon: "error",
+                  title: "Add Failed",
+                  text: `Failed to add product: ${errorText}`,
+                });
+              }
+            } catch (error) {
+              console.error("Error:", error);
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "An error occurred. Please try again.",
+              });
+            }
+          }
         });
-      }
-    }
-  });
 
-document
-  .getElementById("backToProductBtn")
-  .addEventListener("click", function () {
-    window.location.href = "Product.html";
-  });
-
+      document
+        .getElementById("backToProductBtn")
+        .addEventListener("click", function () {
+          window.location.href = "Product.html";
+        });
     </script>
-
   </body>
 </html>
