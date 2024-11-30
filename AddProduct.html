@@ -1,6 +1,5 @@
 <!DOCTYPE html> 
 <html lang="en">
-  <!-- huh -->
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -98,6 +97,19 @@
             stock: productStock,
           };
 
+          // Ambil token dari localStorage
+          const token = localStorage.getItem("token"); // Pastikan token disimpan di localStorage
+
+          if (!token) {
+            // Jika tidak ada token, tampilkan pesan kesalahan
+            Swal.fire({
+              icon: "error",
+              title: "Unauthorized",
+              text: "You are not authorized to add products. Please log in first.",
+            });
+            return;
+          }
+
           // Tampilkan konfirmasi sebelum menambah produk
           const result = await Swal.fire({
             icon: "warning",
@@ -113,7 +125,10 @@
                 "https://pos-ochre.vercel.app/api/products",
                 {
                   method: "POST",
-                  headers: { "Content-Type": "application/json" },
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` // Menambahkan header Authorization dengan token
+                  },
                   body: JSON.stringify(newProduct),
                 }
               );
