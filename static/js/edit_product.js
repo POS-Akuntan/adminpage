@@ -50,7 +50,7 @@ const fetchProduct = async (productId) => {
         // Isi data di form
         document.getElementById("name").value = product.name;
         document.getElementById("price").value = product.price;
-        document.getElementById("category").value = product.category;
+        document.getElementById("category").value = product.category; //hah?
         document.getElementById("description").value = product.description || "";
         document.getElementById("stock").value = product.stock;
     } catch (error) {
