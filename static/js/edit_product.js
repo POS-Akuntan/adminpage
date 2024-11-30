@@ -21,7 +21,20 @@ const fetchProduct = async (productId) => {
             }
         });
 
-        const response = await fetch(`https://pos-ochre.vercel.app/api/products/${productId}`);
+        // Ambil token dari localStorage
+        const token = localStorage.getItem('token');
+        if (!token) {
+            throw new Error("Authorization token not found. Please log in again.");
+        }
+
+        const response = await fetch(`https://pos-ochre.vercel.app/api/products/${productId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}` // Sertakan token di header Authorization
+            }
+        });
+
         if (!response.ok) {
             throw new Error(`Error ${response.status}: ${await response.text()}`);
         }
@@ -30,7 +43,6 @@ const fetchProduct = async (productId) => {
         Swal.close();
 
         console.log(product);
-        
 
         // Isi data di form
         document.getElementById("name").value = product.name;
@@ -42,11 +54,12 @@ const fetchProduct = async (productId) => {
         Swal.fire({
             icon: "error",
             title: "Error",
-            text: "Failed to fetch product data. Please try again."
+            text: error.message || "Failed to fetch product data. Please try again."
         });
         console.error(error);
     }
 };
+
 
 // Fungsi untuk memperbarui data produk
 document.getElementById("edit-product-form").addEventListener("submit", async function(event) {
