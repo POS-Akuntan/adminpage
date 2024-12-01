@@ -9,31 +9,33 @@
 </head>
 <body>
 
-<div class="container">
-    <h1>Edit Product</h1>
-    <form id="edit-product-form">
-        <label for="name">Name Product:</label>
-        <input type="text" id="name" required>
-
-        <label for="price">Price:</label>
-        <input type="number" id="price" required>
-
-        <label for="category">Category:</label>
-        <input type="text" id="category" required>
-
-        <label for="description">Description:</label>
-        <input type="text" id="description">
-
-        <label for="stock">Stock:</label>
-        <input type="number" id="stock" required>
-
-        <button type="submit">Update Product</button>
-    </form>
-
-    <button class="back-btn" id="Backproductbtn">Back to Product Page</button>
-
-</div>
-
-<script src="static/js/edit_product.js" type="module"></script>
+    <div class="container">
+        <h1>Edit Product</h1>
+        <form id="edit-product-form">
+            <label for="product-name">Name Product:</label>
+            <input type="text" id="product-name" required>
+    
+            <label for="product-price">Price:</label>
+            <input type="number" id="product-price" required>
+    
+            <label for="product-category">Category:</label>
+            <select id="product-category" required>
+                <option value="" disabled selected>Select Category</option>
+            </select>
+    
+            <label for="product-description">Description:</label>
+            <input type="text" id="product-description" required>
+    
+            <label for="product-stock">Stock:</label>
+            <input type="number" id="product-stock" required>
+    
+            <button type="submit">Update Product</button>
+        </form>
+    
+        <button class="back-btn" id="Backproductbtn">Back to Product Page</button>
+    </div>
+    
+    <script src="static/js/edit_product.js"></script>
+    
 </body>
 </html>
