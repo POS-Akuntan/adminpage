@@ -236,187 +236,183 @@
         </section>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" ></script>
-    <script type="module">
-        import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11/src/sweetalert2.js";
-        import { addCSS } from "https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.9/element.js";
-  
-        // Tambahkan CSS untuk SweetAlert
-        addCSS("https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.css");
-        function toggleMenu() {
-            const navMenu = document.querySelector('.nav-menu');
-            navMenu.classList.toggle('show');
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    // Fungsi untuk menampilkan menu
+    function toggleMenu() {
+        const navMenu = document.querySelector('.nav-menu');
+        navMenu.classList.toggle('show');
+    }
+    
+    // Fungsi untuk toggle dropdown
+    function toggleDropdown() {
+        const dropdownContent = document.getElementById('dropdown-content');
+        dropdownContent.classList.toggle('show');
+    }
+    
+    // Ambil kategori dari API
+    async function fetchCategories() {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            Swal.fire("Error", "Authorization token not found. Please log in.", "error");
+            return;
         }
-
-        function toggleDropdown() {
-            const dropdownContent = document.getElementById('dropdown-content');
-            dropdownContent.classList.toggle('show');
-        }
-
-        // Fetch categories from API
-        async function fetchCategories() {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                Swal.fire("Error", "Authorization token not found. Please log in.", "error");
-                return;
-            }
-
-            try {
-                const response = await fetch("https://pos-ochre.vercel.app/api/categories", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
+    
+        try {
+            const response = await fetch("https://pos-ochre.vercel.app/api/categories", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+            if (response.ok) {
+                const categories = await response.json();
+                const categoryTableBody = document.querySelector("#category-table tbody");
+                categoryTableBody.innerHTML = "";
+                categories.forEach((category) => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${category.name}</td>
+                        <td>${category.description || "N/A"}</td>
+                        <td>
+                            <button class="edit-btn" onclick="editCategory('${category._id}', '${category.name}', '${category.description}')">Edit</button>
+                            <button class="delete-btn" onclick="deleteCategory('${category._id}')">Delete</button>
+                        </td>
+                    `;
+                    categoryTableBody.appendChild(row);
                 });
-
-                if (response.ok) {
-                    const categories = await response.json();
-                    const categoryTableBody = document.querySelector("#category-table tbody");
-                    categoryTableBody.innerHTML = "";
-                    categories.forEach((category) => {
-                        const row = document.createElement("tr");
-                        row.innerHTML = `
-                            <td>${category.name}</td>
-                            <td>${category.description || "N/A"}</td>
-                            <td>
-                                <button class="edit-btn" onclick="editCategory(${category._id}, '${category.name}', '${category.description}')">Edit</button>
-                                <button class="delete-btn" onclick="deleteCategory(${category._id})">Delete</button>
-                            </td>
-                        `;
-                        categoryTableBody.appendChild(row);
-                    });
-                } else {
-                    throw new Error("Failed to fetch categories.");
-                }
-            } catch (error) {
-                Swal.fire("Error", error.message, "error");
+            } else {
+                throw new Error("Failed to fetch categories.");
             }
+        } catch (error) {
+            Swal.fire("Error", error.message, "error");
         }
-
-        // Add new category
-        document.getElementById("add-category-form").addEventListener("submit", async (event) => {
-            event.preventDefault();
-
-            const name = document.getElementById("category-name").value;
-            const description = document.getElementById("category-description").value;
-
-            const newCategory = {
-                name,
-                description: description || null,
-            };
-
-            const token = localStorage.getItem("token");
-            if (!token) {
-                Swal.fire("Error", "Authorization token not found. Please log in.", "error");
-                return;
+    }
+    
+    // Fungsi untuk menambah kategori baru
+    document.getElementById("add-category-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+    
+        const name = document.getElementById("category-name").value;
+        const description = document.getElementById("category-description").value;
+    
+        const newCategory = {
+            name,
+            description: description || null,
+        };
+    
+        const token = localStorage.getItem("token");
+        if (!token) {
+            Swal.fire("Error", "Authorization token not found. Please log in.", "error");
+            return;
+        }
+    
+        try {
+            const response = await fetch("https://pos-ochre.vercel.app/api/categories", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(newCategory),
+            });
+    
+            if (response.ok) {
+                Swal.fire("Success", "Category added successfully!", "success");
+                fetchCategories(); // Refresh the category list
+                document.getElementById("add-category-form").reset();
+            } else {
+                throw new Error("Failed to add category.");
             }
-
-            try {
-                const response = await fetch("https://pos-ochre.vercel.app/api/categories", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(newCategory),
-                });
-
-                if (response.ok) {
-                    Swal.fire("Success", "Category added successfully!", "success");
-                    fetchCategories(); // Refresh the category list
-                    document.getElementById("add-category-form").reset();
-                } else {
-                    throw new Error("Failed to add category.");
-                }
-            } catch (error) {
-                Swal.fire("Error", error.message, "error");
+        } catch (error) {
+            Swal.fire("Error", error.message, "error");
+        }
+    });
+    
+    // Fungsi untuk mengedit kategori
+    async function editCategory(categoryId, name, description) {
+        const newName = prompt("Edit category name:", name);
+        const newDescription = prompt("Edit category description:", description);
+    
+        if (newName === null || newDescription === null) return; // Cancelled
+    
+        const updatedCategory = {
+            name: newName,
+            description: newDescription || null,
+        };
+    
+        const token = localStorage.getItem("token");
+        if (!token) {
+            Swal.fire("Error", "Authorization token not found. Please log in.", "error");
+            return;
+        }
+    
+        try {
+            const response = await fetch(`https://pos-ochre.vercel.app/api/categories/${categoryId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(updatedCategory),
+            });
+    
+            if (response.ok) {
+                Swal.fire("Success", "Category updated successfully!", "success");
+                fetchCategories(); // Refresh the category list
+            } else {
+                const errorMessage = await response.text();
+                throw new Error(`Failed to update category: ${errorMessage}`);
             }
+        } catch (error) {
+            Swal.fire("Error", error.message, "error");
+        }
+    }
+    
+    // Fungsi untuk menghapus kategori
+    async function deleteCategory(categoryId) {
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "This category will be deleted.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
         });
-
-        // Edit category
-        async function editCategory(categoryId, name, description) {
-            const newName = prompt("Edit category name:", name);
-            const newDescription = prompt("Edit category description:", description);
-        
-            if (newName === null || newDescription === null) return; // Cancelled
-        
-            const updatedCategory = {
-                name: newName,
-                description: newDescription || null,
-            };
-        
+    
+        if (result.isConfirmed) {
             const token = localStorage.getItem("token");
             if (!token) {
                 Swal.fire("Error", "Authorization token not found. Please log in.", "error");
                 return;
             }
-        
+    
             try {
                 const response = await fetch(`https://pos-ochre.vercel.app/api/categories/${categoryId}`, {
-                    method: "PUT",
+                    method: "DELETE",
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
                     },
-                    body: JSON.stringify(updatedCategory),
                 });
-        
+    
                 if (response.ok) {
-                    Swal.fire("Success", "Category updated successfully!", "success");
+                    Swal.fire("Success", "Category deleted successfully!", "success");
                     fetchCategories(); // Refresh the category list
                 } else {
                     const errorMessage = await response.text();
-                    throw new Error(`Failed to update category: ${errorMessage}`);
+                    throw new Error(`Failed to delete category: ${errorMessage}`);
                 }
             } catch (error) {
                 Swal.fire("Error", error.message, "error");
             }
         }
-        
-
-        // Delete category
-        async function deleteCategory(categoryId) {
-            const result = await Swal.fire({
-                title: "Are you sure?",
-                text: "This category will be deleted.",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Yes, delete it!",
-            });
-        
-            if (result.isConfirmed) {
-                const token = localStorage.getItem("token");
-                if (!token) {
-                    Swal.fire("Error", "Authorization token not found. Please log in.", "error");
-                    return;
-                }
-        
-                try {
-                    const response = await fetch(`https://pos-ochre.vercel.app/api/categories/${categoryId}`, {
-                        method: "DELETE",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`,
-                        },
-                    });
-        
-                    if (response.ok) {
-                        Swal.fire("Success", "Category deleted successfully!", "success");
-                        fetchCategories(); // Refresh the category list
-                    } else {
-                        const errorMessage = await response.text();
-                        throw new Error(`Failed to delete category: ${errorMessage}`);
-                    }
-                } catch (error) {
-                    Swal.fire("Error", error.message, "error");
-                }
-            }
-        }
-        
-
-        // Load categories on page load
-        window.onload = fetchCategories;
+    }
+    
+    // Load categories on page load
+    window.onload = fetchCategories;
     </script>
+    
 </body>
 </html>
