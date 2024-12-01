@@ -17,9 +17,9 @@
         <label for="product-price">Price:</label>
         <input type="number" id="product-price" required />
 
-        <label for="product-category_name">Category:</label>
+        <label for="product-category">Category:</label>
         <!-- Dropdown untuk kategori -->
-        <select id="product-category_name" required>
+        <select id="product-category" required>
           <!-- Opsi kategori akan dimasukkan di sini secara dinamis -->
         </select>
 
@@ -45,127 +45,129 @@
       addCSS("https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.css");
 
       // Fungsi untuk mengambil kategori produk
-      const fetchCategories = async () => {
-        try {
-          const response = await fetch("https://pos-ochre.vercel.app/api/categories"); // Ganti dengan API yang sesuai
-          const categories = await response.json();
+// Fungsi untuk mengambil kategori produk
+const fetchCategories = async () => {
+  try {
+    const response = await fetch("https://pos-ochre.vercel.app/api/categories"); // Ganti dengan API yang sesuai
+    const categories = await response.json();
 
-          // Isi dropdown kategori dengan data kategori
-          const categorySelect = document.getElementById("product-category_name");
-          categories.forEach(category => {
-            const option = document.createElement("option");
-            option.value = category.id;  // Pastikan field ID dan Name sesuai
-            option.textContent = category.name;
-            categorySelect.appendChild(option);
+    // Isi dropdown kategori dengan data kategori
+    const categorySelect = document.getElementById("product-category_name");
+    categories.forEach(category => {
+      const option = document.createElement("option");
+      option.value = category.id;  // ID kategori
+      option.textContent = category.name;  // Nama kategori
+      categorySelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Failed to load categories",
+      text: "There was an error loading the categories. Please try again."
+    });
+  }
+};
+
+// Muat kategori saat halaman dimuat
+window.onload = fetchCategories;
+
+// Menangani form submit
+document
+  .getElementById("add-product-form")
+  .addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    // Ambil nilai form
+    const productName = document.getElementById("product-name").value;
+    const productPrice = parseFloat(
+      document.getElementById("product-price").value
+    );
+    const productCategoryId = document.getElementById("product-category_name").value;
+    const productDescription = document.getElementById("product-description").value;
+    const productStock = parseInt(
+      document.getElementById("product-stock").value,
+      10
+    );
+
+    // Buat objek produk baru
+    const newProduct = {
+      name: productName,
+      price: productPrice,
+      category_id: productCategoryId,  // ID kategori
+      description: productDescription,
+      stock: productStock,
+    };
+
+    // Ambil token dari localStorage
+    const token = localStorage.getItem("token"); // Pastikan token disimpan di localStorage
+
+    if (!token) {
+      // Jika tidak ada token, tampilkan pesan kesalahan
+      Swal.fire({
+        icon: "error",
+        title: "Unauthorized",
+        text: "You are not authorized to add products. Please log in first.",
+      });
+      return;
+    }
+
+    // Tampilkan konfirmasi sebelum menambah produk
+    const result = await Swal.fire({
+      icon: "warning",
+      title: "Are you sure you want to add this product?",
+      showCancelButton: true,
+      confirmButtonText: "Yes, add it!",
+      cancelButtonText: "No, keep editing",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(
+          "https://pos-ochre.vercel.app/api/products",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}` // Menambahkan header Authorization dengan token
+            },
+            body: JSON.stringify(newProduct),
+          }
+        );
+
+        if (response.ok) {
+          // Tampilkan pesan sukses
+          await Swal.fire({
+            icon: "success",
+            title: "Added",
+            text: "Product added successfully!",
           });
-        } catch (error) {
-          console.error("Error fetching categories:", error);
+          window.location.href = "Product.html";
+        } else {
+          const errorText = await response.text();
           Swal.fire({
             icon: "error",
-            title: "Failed to load categories",
-            text: "There was an error loading the categories. Please try again."
+            title: "Add Failed",
+            text: `Failed to add product: ${errorText}`,
           });
         }
-      };
-
-      // Muat kategori saat halaman dimuat
-      window.onload = fetchCategories;
-
-      // Menangani form submit
-      document
-        .getElementById("add-product-form")
-        .addEventListener("submit", async function (event) {
-          event.preventDefault();
-
-          // Ambil nilai form
-          const productName = document.getElementById("product-name").value;
-          const productPrice = parseFloat(
-            document.getElementById("product-price").value
-          );
-          const productCategoryId = document.getElementById("product-category_name").value;
-          const productDescription = document.getElementById("product-description").value;
-          const productStock = parseInt(
-            document.getElementById("product-stock").value,
-            10
-          );
-
-          // Buat objek produk baru
-          const newProduct = {
-            name: productName,
-            price: productPrice,
-            category_id: productCategoryId,  // Gunakan category_id jika kategori di API berdasarkan ID
-            description: productDescription,
-            stock: productStock,
-          };
-
-          // Ambil token dari localStorage
-          const token = localStorage.getItem("token"); // Pastikan token disimpan di localStorage
-
-          if (!token) {
-            // Jika tidak ada token, tampilkan pesan kesalahan
-            Swal.fire({
-              icon: "error",
-              title: "Unauthorized",
-              text: "You are not authorized to add products. Please log in first.",
-            });
-            return;
-          }
-
-          // Tampilkan konfirmasi sebelum menambah produk
-          const result = await Swal.fire({
-            icon: "warning",
-            title: "Are you sure you want to add this product?",
-            showCancelButton: true,
-            confirmButtonText: "Yes, add it!",
-            cancelButtonText: "No, keep editing",
-          });
-
-          if (result.isConfirmed) {
-            try {
-              const response = await fetch(
-                "https://pos-ochre.vercel.app/api/products",
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}` // Menambahkan header Authorization dengan token
-                  },
-                  body: JSON.stringify(newProduct),
-                }
-              );
-
-              if (response.ok) {
-                // Tampilkan pesan sukses
-                await Swal.fire({
-                  icon: "success",
-                  title: "Added",
-                  text: "Product added successfully!",
-                });
-                window.location.href = "Product.html";
-              } else {
-                const errorText = await response.text();
-                Swal.fire({
-                  icon: "error",
-                  title: "Add Failed",
-                  text: `Failed to add product: ${errorText}`,
-                });
-              }
-            } catch (error) {
-              console.error("Error:", error);
-              Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: "An error occurred. Please try again.",
-              });
-            }
-          }
+      } catch (error) {
+        console.error("Error:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "An error occurred. Please try again.",
         });
+      }
+    }
+  });
 
-      document
-        .getElementById("backToProductBtn")
-        .addEventListener("click", function () {
-          window.location.href = "Product.html";
-        });
+document
+  .getElementById("backToProductBtn")
+  .addEventListener("click", function () {
+    window.location.href = "Product.html";
+  });
+
     </script>
   </body>
 </html>
