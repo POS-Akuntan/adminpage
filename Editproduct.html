@@ -99,12 +99,12 @@
           console.log("Product data:", product);
 
           // Isi data produk ke dalam form
-          document.getElementById("name").value = product.name;
-          document.getElementById("price").value = product.price;
-          document.getElementById("category").value = product.category;
+          document.getElementById("name").value = product?.name;
+          document.getElementById("price").value = product?.price;
+          document.getElementById("category").value = product?.category;
           document.getElementById("description").value =
-            product.description || "";
-          document.getElementById("stock").value = product.stock;
+            product?.description || "";
+          document.getElementById("stock").value = product?.stock;
         } catch (error) {
           // Tampilkan error alert
           Swal.fire({
