@@ -1,101 +1,48 @@
-let currentTable = 'salesTable'; // Default ke tabel sales
+import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11/src/sweetalert2.js";
+import {addCSS} from "https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.9/element.js";
 
-function showSales() {
-    document.getElementById('salesTable').classList.remove('hidden');
-    document.getElementById('expensesTable').classList.add('hidden');
-    currentTable = 'salesTable';
-    fetchSalesData();
+addCSS("https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.css");
+
+// Ambil data transaksi dari API dan tampilkan dalam tabel
+async function fetchTransactions() {
+    const token = localStorage.getItem("token"); // Ambil token dari localStorage
+    if (!token) {
+        Swal.fire("Error", "Authorization token not found. Please log in.", "error");
+        return;
+    }
+
+    try {
+        const response = await fetch("https://pos-ochre.vercel.app/api/transactions", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (response.ok) {
+            const transactions = await response.json();
+            const salesTableBody = document.getElementById("salesTableBody");
+            salesTableBody.innerHTML = ""; // Kosongkan tabel sebelum menambah data baru
+
+            transactions.forEach((transaction) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${new Date(transaction.transaction_date).toLocaleDateString()}</td>
+                    <td>${transaction.user_id}</td> <!-- Bisa diganti dengan nama customer jika ada -->
+                    <td>${transaction.product_name || "N/A"}</td>
+                    <td>$${transaction.total_amount}</td>
+                    <td>${transaction.payment_method || "N/A"}</td>
+                `;
+                salesTableBody.appendChild(row);
+            });
+        } else {
+            throw new Error("Failed to fetch transactions.");
+        }
+    } catch (error) {
+        Swal.fire("Error", error.message, "error");
+    }
 }
 
-function showExpenses() {
-    document.getElementById('expensesTable').classList.remove('hidden');
-    document.getElementById('salesTable').classList.add('hidden');
-    currentTable = 'expensesTable';
-    fetchExpensesData();
-}
-
-async function fetchSalesData() {
-    const response = await fetch('https://asia-southeast2-awangga.cloudfunctions.net/itungin/sales');
-    const salesData = await response.json();
-    const salesTableBody = document.getElementById('salesTableBody');
-    salesTableBody.innerHTML = '';
-
-    salesData.forEach(sale => {
-        const productNames = sale.products.map(product => product.name).join(', ');
-        const row = `<tr>
-            <td>${new Date(sale.transactionDate).toLocaleDateString()}</td>
-            <td>${sale.customer_name}</td>
-            <td>${productNames}</td>
-            <td>${sale.total_amount}</td>
-            <td>${sale.payment_method}</td>
-        </tr>`;
-        salesTableBody.innerHTML += row;
-    });
-}
-
-async function fetchExpensesData() {
-    const response = await fetch('https://asia-southeast2-awangga.cloudfunctions.net/itungin/expenses');
-    const expensesData = await response.json();
-    const expensesTableBody = document.getElementById('expensesTableBody');
-    expensesTableBody.innerHTML = '';
-
-    expensesData.forEach(expense => {
-        const row = `<tr>
-            <td>${new Date(expense.expense_date).toLocaleDateString()}</td>
-            <td>${expense.expense_name}</td>
-            <td>${expense.amount}</td>
-            <td>${expense.category}</td>
-        </tr>`;
-        expensesTableBody.innerHTML += row;
-    });
-}
-
-async function fetchCustomers() {
-    const response = await fetch('https://asia-southeast2-awangga.cloudfunctions.net/itungin/customers');
-    const customersData = await response.json();
-    const customersTableBody = document.getElementById('customersTableBody');
-    customersTableBody.innerHTML = '';
-
-    customersData.forEach(customer => {
-        const row = `<tr>
-            <td>${customer.name}</td>
-            <td>${customer.email}</td>
-            <td>${customer.phone}</td>
-            <td>${customer.address}</td>
-        </tr>`;
-        customersTableBody.innerHTML += row;
-    });
-}
-
-function exportCurrentTableToCSV() {
-    const tableBodyId = currentTable === 'salesTable' ? 'salesTableBody' : 'expensesTableBody';
-    const filename = currentTable === 'salesTable' ? 'sales_transactions.csv' : 'expense_transactions.csv';
-    exportToCSV(tableBodyId, filename);
-}
-
-function exportToCSV(tableId, filename) {
-    const rows = document.querySelectorAll(`#${tableId} tr`);
-    const csvContent = Array.from(rows).map(row => {
-        const columns = row.querySelectorAll('th, td');
-        return Array.from(columns).map(column => column.textContent).join(',');
-    }).join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-}
-
-const salesTable = document.getElementById('salesTable');
-const expensesTable = document.getElementById('expensesTable');
-const salesTableBody = document.getElementById('salesTableBody');
-const expensesTableBody = document.getElementById('expensesTableBody');
-const customersTableBody = document.getElementById('customersTableBody');
-
-// Fetch initial data
-showSales();
-showExpenses();
-fetchCustomers();
+// Panggil fungsi fetchTransactions saat halaman dimuat
+window.onload = fetchTransactions;

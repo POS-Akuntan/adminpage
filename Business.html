@@ -1,168 +1,147 @@
-<!DOCTYPE html>
-<html lang="en">
+  <!DOCTYPE html>
+  <html lang="en">
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard Akuntansi</title>
-  <link rel="stylesheet" href="static/css/business.css" />
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Akuntansi</title>
+    <link rel="stylesheet" href="static/css/business.css" />
+  </head>
 
-<body>
-  <!-- Navigation Bar -->
+  <body>
+    <!-- Navigation Bar -->
 
 
-  <header>
-    <!-- Tombol menu untuk perangkat mobile -->
-    <button class="menu-toggle" onclick="toggleMenu()">☰ Menu</button>
+    <header>
+      <!-- Tombol menu untuk perangkat mobile -->
+      <button class="menu-toggle" onclick="toggleMenu()">☰ Menu</button>
 
-    <!-- Navigasi (disembunyikan pada perangkat mobile) -->
-    <nav>
-      <ul class="nav-menu">
-        <li><a href="index.html">Dashboard</a></li>
-        <li style="background-color: #97ced1">
-          <a href="Business.html" style="color: rgb(255, 255, 255)">Business</a>
-        </li>
-        <li><a href="Accounting.html">Category</a></li>
-        <li><a href="Product.html">Product</a></li>
-        <li><a href="Contacts.html">Contact Us</a></li>
-      </ul>
-    </nav>
-    <!-- Profil pengguna -->
-    <div class="user-profile">
-        <img src="static/img/ImageAcc.png" alt="User Profile" class="user-image" id="user-avatar" />
-        <div class="dropdown" id="profile-dropdown">
-            <button onclick="toggleDropdown()" class="dropbtn">▼</button>
-            <div class="dropdown-content" id="dropdown-content">
-                <a href="profile.html">Profile</a>
-                <a href="https://itungin.github.io/">Logout</a>
-            </div>
+      <!-- Navigasi (disembunyikan pada perangkat mobile) -->
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html">Dashboard</a></li>
+          <li style="background-color: #97ced1">
+            <a href="Business.html" style="color: rgb(255, 255, 255)">Business</a>
+          </li>
+          <li><a href="Accounting.html">Category</a></li>
+          <li><a href="Product.html">Product</a></li>
+          <li><a href="Contacts.html">Contact Us</a></li>
+        </ul>
+      </nav>
+      <!-- Profil pengguna -->
+      <div class="user-profile">
+          <img src="static/img/ImageAcc.png" alt="User Profile" class="user-image" id="user-avatar" />
+          <div class="dropdown" id="profile-dropdown">
+              <button onclick="toggleDropdown()" class="dropbtn">▼</button>
+              <div class="dropdown-content" id="dropdown-content">
+                  <a href="profile.html">Profile</a>
+                  <a href="https://itungin.github.io/">Logout</a>
+              </div>
+          </div>
+      </div>
+  </header>
+    <!-- Main Business Dashboard Content -->
+    <div class="business-dashboard">
+      <h1>Business Overview</h1>
+      <!-- Business Statistics -->
+      <section class="statistics">
+        <div class="stat-card">
+          <h3>Last Month Summary</h3>
+          <p>$500,000</p>
         </div>
-    </div>
-</header>
-  <!-- Main Business Dashboard Content -->
-  <div class="business-dashboard">
-    <h1>Business Overview</h1>
-    <!-- Business Statistics -->
-    <section class="statistics">
-      <div class="stat-card">
-        <h3>Last Month Summary</h3>
-        <p>$500,000</p>
-      </div>
 
-      <div class="stat-card">
-        <h3>Last Month Total Expenses</h3>
-        <p>$200,000</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>Last Month Net Profit</h3>
-        <p>$300,000</p>
-      </div>
-    </section>
-    <!-- Button to switch between tables -->
-    <div class="table-switcher">
-      <button onclick="showSales()">Product Sales Transactions</button>
-      <button onclick="showExpenses()">Transactions</button>
-    </div>
-    <!-- Sales Transactions Table -->
-    <div class="table-container" id="salesTable">
-      <h2>Sales Transactions
-        <div class="export-buttons">
-          <button class="export-csv-btn" onclick="exportCurrentTableToCSV()">Export to CSV</button>
+        <div class="stat-card">
+          <h3>Last Month Total Expenses</h3>
+          <p>$200,000</p>
         </div>
-      </h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Transaction Date</th>
-            <th>Customer Name</th>
-            <th>Product Name</th>
-            <th>Total Amount</th>
-            <th>Payment Method</th>
-          </tr>
-        </thead>
-        <tbody id="salesTableBody">
-          <!-- Data will be populated here -->
-        </tbody>
-      </table>
-    </div>
-    <!-- Expense Transactions Table -->
-    <div class="table-container hidden" id="expensesTable">
-      <h2>Expense Transactions
-        <button class="add-product-btn" onclick="window.location.href='add_expense.html'">Tambah Pengeluaran</button>
-        <div class="export-buttons">
-          <button class="export-csv-btn" onclick="exportCurrentTableToCSV()">Export to CSV</button>
-        </div>
-      </h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Expense Date</th>
-            <th>Expense Name</th>
-            <th>Amount</th>
-            <th>Category</th>
-          </tr>
-        </thead>
-        <tbody id="expensesTableBody">
-          <!-- Data will be populated here -->
-        </tbody>
-      </table>
-    </div>
-    <!-- Employee and Customer Data -->
-    <section class="data-section">
-      <div class="data-table">
-        <h2>Employee Overview</h2>
-        <table>
-          <tr>
-            <th>Name</th>
-            <th>Position</th>
-            <th>Department</th>
-          </tr>
-          <tr>
-            <td>Waskitho</td>
-            <td>Manager</td>
-            <td>HR</td>
-          </tr>
-          <tr>
-            <td>Anton</td>
-            <td>Accountant</td>
-            <td>Finance</td>
-          </tr>
-        </table>
-      </div>
 
-      <div class="data-table" id="customersTable">
-        <h2>Customer Overview</h2>
-        <!-- Add Product Button -->
+        <div class="stat-card">
+          <h3>Last Month Net Profit</h3>
+          <p>$300,000</p>
+        </div>
+      </section>
+      <!-- Button to switch between tables -->
+      <div class="table-switcher">
+
+      </div>
+      <!-- Sales Transactions Table -->
+      <div class="table-container" id="salesTable">
+        <h2>Sales Transactions
+          <div class="export-buttons">
+            <button class="export-csv-btn" onclick="exportCurrentTableToCSV()">Export to CSV</button>
+          </div>
+        </h2>
         <table>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Address</th>
+              <th>Transaction Date</th>
+              <th>Customer Name</th>
+              <th>Product Name</th>
+              <th>Total Amount</th>
+              <th>Payment Method</th>
             </tr>
           </thead>
-          <tbody id="customersTableBody">
+          <tbody id="salesTableBody">
             <!-- Data will be populated here -->
           </tbody>
         </table>
       </div>
-    </section>
-  </div>
+      <!-- Expense Transactions Table -->
 
-  <script src="static/js/business.js"></script>
-  <script>
-    function toggleMenu() {
-      const navMenu = document.querySelector('.nav-menu');
-      navMenu.classList.toggle('show');
-  }
-  
-  function toggleDropdown() {
-      const dropdownContent = document.getElementById('dropdown-content');
-      dropdownContent.classList.toggle('show');
-  }
-  </script>
-</body>
-</html>
+      <!-- Employee and Customer Data -->
+      <section class="data-section">
+        <div class="data-table">
+          <h2>Employee Overview</h2>
+          <table>
+            <tr>
+              <th>Name</th>
+              <th>Position</th>
+              <th>Department</th>
+            </tr>
+            <tr>
+              <td>Waskitho</td>
+              <td>Manager</td>
+              <td>HR</td>
+            </tr>
+            <tr>
+              <td>Anton</td>
+              <td>Accountant</td>
+              <td>Finance</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="data-table" id="customersTable">
+          <h2>Customer Overview</h2>
+          <!-- Add Product Button -->
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Address</th>
+              </tr>
+            </thead>
+            <tbody id="customersTableBody">
+              <!-- Data will be populated here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <script src="static/js/business.js" type="module"></script>
+    <script>
+      function toggleMenu() {
+        const navMenu = document.querySelector('.nav-menu');
+        navMenu.classList.toggle('show');
+    }
+    
+    function toggleDropdown() {
+        const dropdownContent = document.getElementById('dropdown-content');
+        dropdownContent.classList.toggle('show');
+    }
+    </script>
+  </body>
+  </html>
