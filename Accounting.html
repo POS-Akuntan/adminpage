@@ -277,8 +277,8 @@
                         <td>${category.name}</td>
                         <td>${category.description || "N/A"}</td>
                         <td>
-                            <button class="edit-btn" onclick="editCategory('${category._id}', '${category.name}', '${category.description}')">Edit</button>
-                            <button class="delete-btn" onclick="deleteCategory('${category._id}')">Delete</button>
+                            <button class="edit-btn" onclick="editCategory('${category.id}', '${category.name}', '${category.description}')">Edit</button>
+                            <button class="delete-btn" onclick="deleteCategory('${category.id}')">Delete</button>
                         </td>
                     `;
                     categoryTableBody.appendChild(row);
