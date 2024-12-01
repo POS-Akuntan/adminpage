@@ -45,7 +45,7 @@ const fetchProduct = async (productId) => {
         const product = await response.json();
         Swal.close();
 
-        console.log("Product Category:", product.category);//ini
+        console.log("Product Category:", product.category);
 
 
         // Isi data di form
