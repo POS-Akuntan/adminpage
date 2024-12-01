@@ -1,3 +1,80 @@
+// Fungsi untuk menerapkan pagination
+function applyPagination(data, rowsPerPage = 8) {
+    const paginationContainer = document.getElementById("paginationContainer");
+    const salesTableBody = document.getElementById("salesTableBody");
+    paginationContainer.innerHTML = ""; // Clear pagination buttons
+
+    const totalPages = Math.ceil(data.length / rowsPerPage);
+    let currentPage = 1;
+
+    // Fungsi untuk menampilkan data per halaman
+    function displayPage(page) {
+        salesTableBody.innerHTML = ""; // Clear current rows
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        const paginatedData = data.slice(start, end);
+
+        for (const transaction of paginatedData) {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${new Date(transaction.transaction_date).toLocaleString()}</td>
+                <td>${transaction.user_name || "N/A"}</td>
+                <td>${transaction.total_amount}</td>
+                <td>${transaction.payment_method || "N/A"}</td>
+            `;
+            salesTableBody.appendChild(row);
+        }
+    }
+
+    // Fungsi untuk membuat tombol pagination
+    function createPaginationButtons() {
+        for (let i = 1; i <= totalPages; i++) {
+            const button = document.createElement("button");
+            button.textContent = i;
+            button.className = "pagination-button";
+            button.onclick = () => {
+                currentPage = i;
+                displayPage(currentPage);
+            };
+            paginationContainer.appendChild(button);
+        }
+    }
+
+    // Inisialisasi halaman pertama
+    displayPage(currentPage);
+    createPaginationButtons();
+}
+
+// Update fungsi fetchTransactions untuk menggunakan pagination
+async function fetchTransactions() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        Swal.fire("Error", "Authorization token not found. Please log in.", "error");
+        return;
+    }
+
+    try {
+        const response = await fetch("https://pos-ochre.vercel.app/api/transactions", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch transactions");
+        }
+
+        const transactions = await response.json();
+        applyPagination(transactions, 8); // Terapkan pagination dengan 8 data per halaman
+    } catch (error) {
+        console.error("Error fetching transactions:", error);
+        Swal.fire("Error", "Failed to load transactions", "error");
+    }
+}
+
+
 async function fetchTransactions() {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -163,4 +240,4 @@ window.onload = () => {
     fetchStatistics(); // Mem-fetch statistik untuk cards
 };
 
-
+// 4
