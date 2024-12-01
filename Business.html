@@ -8,6 +8,30 @@
     <link rel="stylesheet" href="static/css/business.css" />
     <!-- SweetAlert CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    
+    .pagination-button {
+        margin: 0 5px;
+        padding: 10px;
+        background-color: #f1f1f1;
+        border: 1px solid #ccc;
+        cursor: pointer;
+    }
+    
+    .pagination-button:hover {
+        background-color: #ddd;
+    }
+    
+    .pagination-button:focus {
+        outline: none;
+    }
+    
+    </style>
 </head>
 
 
@@ -68,26 +92,29 @@
 
       </div>
       <!-- Sales Transactions Table -->
-      <div class="table-container" id="salesTable">
-        <h2>Sales Transactions
-          <div class="export-buttons">
-            <button class="export-csv-btn" onclick="exportCurrentTableToCSV()">Export to CSV</button>
-          </div>
-        </h2>
-        <table>
-          <thead>
+<!-- Sales Transactions Table -->
+<div class="table-container" id="salesTable">
+    <h2>Sales Transactions</h2>
+    <div class="export-buttons">
+        <button class="export-csv-btn" onclick="exportCurrentTableToCSV()">Export to CSV</button>
+    </div>
+    <table>
+        <thead>
             <tr>
-              <th>Transaction Date</th>
-              <th>User Name</th>
-              <th>Total Amount</th>
-              <th>Payment Method</th>
+                <th>Transaction Date</th>
+                <th>User Name</th>
+                <th>Total Amount</th>
+                <th>Payment Method</th>
             </tr>
-          </thead>
-          <tbody id="salesTableBody">
+        </thead>
+        <tbody id="salesTableBody">
             <!-- Data will be populated here -->
-          </tbody>
-        </table>
-      </div>
+        </tbody>
+    </table>
+    <!-- Pagination -->
+    <div id="paginationContainer" class="pagination-container"></div>
+</div>
+
       <!-- Expense Transactions Table -->
 
       <!-- Employee and Customer Data -->

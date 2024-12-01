@@ -1,4 +1,8 @@
-async function fetchTransactions() {
+let currentPage = 1;
+let totalPages = 1;
+const transactionsPerPage = 10; // Jumlah transaksi per halaman
+
+async function fetchTransactions(page = 1) {
     const token = localStorage.getItem("token");
     if (!token) {
         Swal.fire("Error", "Authorization token not found. Please log in.", "error");
@@ -6,11 +10,11 @@ async function fetchTransactions() {
     }
 
     try {
-        const response = await fetch("https://pos-ochre.vercel.app/api/transactions", {
+        const response = await fetch(`https://pos-ochre.vercel.app/api/transactions?page=${page}&limit=${transactionsPerPage}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`, // Menambahkan token di header
+                "Authorization": `Bearer ${token}`,
             },
         });
 
@@ -18,28 +22,72 @@ async function fetchTransactions() {
             throw new Error("Failed to fetch transactions");
         }
 
-        const transactions = await response.json();
+        const { transactions, total } = await response.json(); // Pastikan API mengirim 'transactions' dan 'total'
 
+        // Update jumlah halaman berdasarkan total transaksi
+        totalPages = Math.ceil(total / transactionsPerPage);
+
+        // Clear tabel yang ada
         const salesTableBody = document.getElementById("salesTableBody");
-        salesTableBody.innerHTML = ""; // Clear existing rows
+        salesTableBody.innerHTML = ""; 
 
-        for (const transaction of transactions) {
-            // Menampilkan data transaksi termasuk user_name
+        // Menambahkan data transaksi ke dalam tabel
+        transactions.forEach(transaction => {
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${new Date(transaction.transaction_date).toLocaleString()}</td>
-                <td>${transaction.user_name || "N/A"}</td> <!-- Mengambil user_name langsung dari transaksi -->
+                <td>${transaction.user_name || "N/A"}</td>
                 <td>${transaction.total_amount}</td>
                 <td>${transaction.payment_method || "N/A"}</td>
             `;
             salesTableBody.appendChild(row);
-        }
+        });
+
+        // Update tombol pagination
+        updatePagination();
     } catch (error) {
         console.error("Error fetching transactions:", error);
         Swal.fire("Error", "Failed to load transactions", "error");
     }
 }
 
+// Fungsi untuk mengupdate tombol pagination
+function updatePagination() {
+    const paginationContainer = document.getElementById("pagination");
+    paginationContainer.innerHTML = ""; // Clear tombol pagination sebelumnya
+
+    // Tombol Previous
+    const prevButton = document.createElement("button");
+    prevButton.innerText = "Previous";
+    prevButton.disabled = currentPage === 1;
+    prevButton.addEventListener("click", () => changePage(currentPage - 1));
+    paginationContainer.appendChild(prevButton);
+
+    // Tombol nomor halaman
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement("button");
+        pageButton.innerText = i;
+        pageButton.disabled = i === currentPage;
+        pageButton.addEventListener("click", () => changePage(i));
+        paginationContainer.appendChild(pageButton);
+    }
+
+    // Tombol Next
+    const nextButton = document.createElement("button");
+    nextButton.innerText = "Next";
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.addEventListener("click", () => changePage(currentPage + 1));
+    paginationContainer.appendChild(nextButton);
+}
+
+// Fungsi untuk merubah halaman
+function changePage(page) {
+    if (page < 1 || page > totalPages) return;
+    currentPage = page;
+    fetchTransactions(currentPage);
+}
+
+// Fungsi untuk mengambil data pengguna
 async function fetchUsers() {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -52,7 +100,7 @@ async function fetchUsers() {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`, // Menambahkan token di header
+                "Authorization": `Bearer ${token}`,
             },
         });
 
@@ -61,12 +109,9 @@ async function fetchUsers() {
         }
 
         const data = await response.json();
-        console.log("Users data:", data);  // Menampilkan hasil response di console
+        console.log("Users data:", data);
 
-        // Ambil data users dari respons
-        const users = data.users || [];  // Akses data users yang ada di dalam response
-
-        // Mendapatkan body dari tabel employee
+        const users = data.users || [];
         const employeeTableBody = document.getElementById("employeesTableBody");
         employeeTableBody.innerHTML = ""; // Clear existing rows
 
@@ -75,8 +120,7 @@ async function fetchUsers() {
             return;
         }
 
-        // Menampilkan data pengguna (employee) dengan role, name, dan email
-        for (const user of users) {
+        users.forEach(user => {
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${user.name || "N/A"}</td>
@@ -85,13 +129,14 @@ async function fetchUsers() {
                 <td>${user.phone_number || "N/A"}</td>
             `;
             employeeTableBody.appendChild(row);
-        }
+        });
     } catch (error) {
         console.error("Error fetching users:", error);
         Swal.fire("Error", "Failed to load employee data", "error");
     }
 }
 
+// Fungsi untuk mengambil statistik
 async function fetchStatistics() {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -113,7 +158,6 @@ async function fetchStatistics() {
         }
 
         const transactions = await response.json();
-        console.log("Transactions data:", transactions);
 
         // 1. Pendapatan Kemarin Hari
         const yesterday = new Date();
@@ -146,7 +190,7 @@ async function fetchStatistics() {
             0
         );
 
-        // 4. Update Card dengan Data
+        // Update Card dengan Data
         document.querySelector(".stat-card:nth-child(1) p").innerText = `Rp ${yesterdayIncome.toLocaleString("id-ID")}`;
         document.querySelector(".stat-card:nth-child(2) p").innerText = `Rp ${lastWeekIncome.toLocaleString("id-ID")}`;
         document.querySelector(".stat-card:nth-child(3) p").innerText = `Rp ${highestIncome.toLocaleString("id-ID")}`;
@@ -158,9 +202,7 @@ async function fetchStatistics() {
 
 // Panggil fungsi fetchStatistics di window.onload
 window.onload = () => {
-    fetchTransactions(); // Mem-fetch data transaksi untuk tabel
+    fetchTransactions(currentPage); // Mem-fetch data transaksi untuk tabel
     fetchUsers(); // Mem-fetch data pengguna untuk tabel Employee
     fetchStatistics(); // Mem-fetch statistik untuk cards
 };
-
-
