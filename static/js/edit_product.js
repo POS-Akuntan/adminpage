@@ -4,10 +4,44 @@ import { addCSS } from "https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.9/element.js
 
 addCSS("https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.css");
 
-// Fungsi kembali ke halaman product
+// Fungsi kembali ke halaman produk
 document.getElementById("Backproductbtn").addEventListener("click", function () {
     window.location.href = "Product.html";
 });
+
+// Fungsi untuk mengambil data kategori dan mengisi dropdown
+const populateCategories = async (selectedCategoryId) => {
+    try {
+        const response = await fetch("https://pos-ochre.vercel.app/api/categories");
+        if (!response.ok) {
+            throw new Error("Failed to fetch categories");
+        }
+
+        const categories = await response.json();
+        const categoryDropdown = document.getElementById("category");
+
+        // Clear existing options
+        categoryDropdown.innerHTML = "<option value='' disabled>Select Category</option>";
+
+        // Populate options
+        categories.forEach((category) => {
+            const option = document.createElement("option");
+            option.value = category.id; // ID kategori sebagai value
+            option.textContent = category.name; // Nama kategori sebagai label
+            if (category.id === selectedCategoryId) {
+                option.selected = true; // Set kategori terpilih
+            }
+            categoryDropdown.appendChild(option);
+        });
+    } catch (error) {
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: error.message || "Failed to fetch categories. Please try again."
+        });
+        console.error(error);
+    }
+};
 
 // Fungsi untuk mengambil data produk berdasarkan ID
 const fetchProduct = async (productId) => {
@@ -22,19 +56,16 @@ const fetchProduct = async (productId) => {
         });
 
         // Ambil token dari localStorage
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (!token) {
             throw new Error("Authorization token not found. Please log in again.");
         }
-
-        // Debug: log token untuk memastikan terbaca
-        console.log("Token:", token);
 
         const response = await fetch(`https://pos-ochre.vercel.app/api/products/${productId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}` // Format Bearer <token>
+                "Authorization": `Bearer ${token}`
             }
         });
 
@@ -45,15 +76,14 @@ const fetchProduct = async (productId) => {
         const product = await response.json();
         Swal.close();
 
-        console.log("Product Category:", product.category);
-
-
         // Isi data di form
         document.getElementById("name").value = product.name;
         document.getElementById("price").value = product.price;
-        document.getElementById("category").value = product.category; //hah?
         document.getElementById("description").value = product.description || "";
         document.getElementById("stock").value = product.stock;
+
+        // Populate kategori dropdown dengan ID kategori produk yang sesuai
+        populateCategories(product.category);
     } catch (error) {
         Swal.fire({
             icon: "error",
@@ -64,9 +94,6 @@ const fetchProduct = async (productId) => {
     }
 };
 
-
-
-// Fungsi untuk memperbarui data produk
 // Fungsi untuk memperbarui data produk
 document.getElementById("edit-product-form").addEventListener("submit", async function(event) {
     event.preventDefault();
@@ -75,7 +102,7 @@ document.getElementById("edit-product-form").addEventListener("submit", async fu
     const updatedProduct = {
         name: document.getElementById("name").value,
         price: parseFloat(document.getElementById("price").value),
-        category: document.getElementById("category").value,
+        category: document.getElementById("category").value, // Hanya kirimkan ID kategori
         description: document.getElementById("description").value,
         stock: parseInt(document.getElementById("stock").value, 10)
     };
@@ -92,13 +119,10 @@ document.getElementById("edit-product-form").addEventListener("submit", async fu
     if (result.isConfirmed) {
         try {
             // Ambil token dari localStorage
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem("token");
             if (!token) {
                 throw new Error("Authorization token not found. Please log in again.");
             }
-
-            // Debug: log token untuk memastikan terbaca
-            console.log("Token:", token);
 
             Swal.fire({
                 title: "Updating...",
@@ -110,10 +134,10 @@ document.getElementById("edit-product-form").addEventListener("submit", async fu
             });
 
             const response = await fetch(`https://pos-ochre.vercel.app/api/products/${productId}`, {
-                method: 'PUT',
+                method: "PUT",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` // Format Bearer <token>
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(updatedProduct)
             });
@@ -139,7 +163,6 @@ document.getElementById("edit-product-form").addEventListener("submit", async fu
         }
     }
 });
-
 
 // Muat data produk saat halaman diload
 window.onload = function() {
