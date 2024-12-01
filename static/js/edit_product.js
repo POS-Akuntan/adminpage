@@ -12,7 +12,7 @@ document.getElementById("Backproductbtn").addEventListener("click", function () 
 // Fungsi untuk mengambil data kategori dan mengisi dropdown
 const populateCategories = async (selectedCategoryId) => {
     try {
-        const response = await fetch("https://pos-ochre.vercel.app/api/products");
+        const response = await fetch("https://pos-ochre.vercel.app/api/categories");
         if (!response.ok) {
             throw new Error("Failed to fetch categories");
         }
@@ -178,4 +178,4 @@ window.onload = function() {
     }
 };
 
-// 2
+// 1
