@@ -270,7 +270,7 @@ async function deleteProduct(productId) {
   // Event listeners for adding new product and exporting to CSV
   document.getElementById("exportCsvBtn").addEventListener("click", function () {
     window.location.href =
-      "https://pos-gray-pi.vercel.app/api/products-export-csv"; // Updated URL
+      "https://pos-ochre.vercel.app/api/products-export-csv"; // Updated URL
   });
   
   document.getElementById("addProductBtn").addEventListener("click", function () {
