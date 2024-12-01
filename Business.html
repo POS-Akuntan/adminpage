@@ -6,7 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard Akuntansi</title>
     <link rel="stylesheet" href="static/css/business.css" />
-  </head>
+    <!-- SweetAlert CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
 
   <body>
     <!-- Navigation Bar -->
@@ -88,45 +91,26 @@
       <!-- Expense Transactions Table -->
 
       <!-- Employee and Customer Data -->
-      <section class="data-section">
-        <div class="data-table">
-          <h2>Employee Overview</h2>
-          <table>
-            <tr>
-              <th>Name</th>
-              <th>Position</th>
-              <th>Department</th>
-            </tr>
-            <tr>
-              <td>Waskitho</td>
-              <td>Manager</td>
-              <td>HR</td>
-            </tr>
-            <tr>
-              <td>Anton</td>
-              <td>Accountant</td>
-              <td>Finance</td>
-            </tr>
-          </table>
-        </div>
-
-        <div class="data-table" id="customersTable">
-          <h2>Customer Overview</h2>
-          <!-- Add Product Button -->
-          <table>
-            <thead>
+<!-- Employee and Customer Data -->
+<section class="data-section">
+  <div class="data-table">
+      <h2>Employee Overview</h2>
+      <table>
+          <thead>
               <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Address</th>
+                  <th>Name</th>
+                  <th>Position</th>
+                  <th>Email</th>
+                  <th>Phone</th>
               </tr>
-            </thead>
-            <tbody id="customersTableBody">
+          </thead>
+          <tbody id="employeesTableBody">
               <!-- Data will be populated here -->
-            </tbody>
-          </table>
-        </div>
+          </tbody>
+      </table>
+  </div>
+
+ 
       </section>
     </div>
 
