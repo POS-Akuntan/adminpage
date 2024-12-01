@@ -92,12 +92,75 @@ async function fetchUsers() {
     }
 }
 
+async function fetchStatistics() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        Swal.fire("Error", "Authorization token not found. Please log in.", "error");
+        return;
+    }
 
+    try {
+        const response = await fetch("https://pos-ochre.vercel.app/api/transactions", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+        });
 
+        if (!response.ok) {
+            throw new Error("Failed to fetch transactions");
+        }
 
+        const transactions = await response.json();
+        console.log("Transactions data:", transactions);
+
+        // 1. Pendapatan Kemarin Hari
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStart = new Date(yesterday.setHours(0, 0, 0, 0));
+        const yesterdayEnd = new Date(yesterday.setHours(23, 59, 59, 999));
+
+        const yesterdayIncome = transactions
+            .filter(
+                (transaction) =>
+                    new Date(transaction.transaction_date) >= yesterdayStart &&
+                    new Date(transaction.transaction_date) <= yesterdayEnd
+            )
+            .reduce((total, transaction) => total + parseFloat(transaction.total_amount || 0), 0);
+
+        // 2. Pendapatan Minggu Kemarin
+        const lastWeek = new Date();
+        lastWeek.setDate(lastWeek.getDate() - 7);
+        const lastWeekIncome = transactions
+            .filter(
+                (transaction) =>
+                    new Date(transaction.transaction_date) >= lastWeek &&
+                    new Date(transaction.transaction_date) <= yesterdayEnd
+            )
+            .reduce((total, transaction) => total + parseFloat(transaction.total_amount || 0), 0);
+
+        // 3. Total Pendapatan Tertinggi
+        const highestIncome = transactions.reduce(
+            (max, transaction) => Math.max(max, parseFloat(transaction.total_amount || 0)),
+            0
+        );
+
+        // 4. Update Card dengan Data
+        document.querySelector(".stat-card:nth-child(1) p").innerText = `Rp ${yesterdayIncome.toLocaleString("id-ID")}`;
+        document.querySelector(".stat-card:nth-child(2) p").innerText = `Rp ${lastWeekIncome.toLocaleString("id-ID")}`;
+        document.querySelector(".stat-card:nth-child(3) p").innerText = `Rp ${highestIncome.toLocaleString("id-ID")}`;
+    } catch (error) {
+        console.error("Error fetching statistics:", error);
+        Swal.fire("Error", "Failed to load statistics", "error");
+    }
+}
+
+// Panggil fungsi fetchStatistics di window.onload
 window.onload = () => {
-    fetchTransactions(); // Mem-fetch transaksi saat halaman dimuat
-    fetchUsers(); // Mem-fetch data pengguna saat halaman dimuat
+    fetchTransactions(); // Mem-fetch data transaksi untuk tabel
+    fetchUsers(); // Mem-fetch data pengguna untuk tabel Employee
+    fetchStatistics(); // Mem-fetch statistik untuk cards
 };
 
 
