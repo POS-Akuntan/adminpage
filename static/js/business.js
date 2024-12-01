@@ -22,7 +22,11 @@ async function fetchTransactions(page = 1) {
             throw new Error("Failed to fetch transactions");
         }
 
-        const { transactions, total } = await response.json(); // Pastikan API mengirim 'transactions' dan 'total'
+        const { transactions, total } = await response.json();
+
+        if (!Array.isArray(transactions)) {
+            throw new Error("Transactions data is not in expected format");
+        }
 
         // Update jumlah halaman berdasarkan total transaksi
         totalPages = Math.ceil(total / transactionsPerPage);
@@ -31,17 +35,21 @@ async function fetchTransactions(page = 1) {
         const salesTableBody = document.getElementById("salesTableBody");
         salesTableBody.innerHTML = ""; 
 
-        // Menambahkan data transaksi ke dalam tabel
-        transactions.forEach(transaction => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td>${new Date(transaction.transaction_date).toLocaleString()}</td>
-                <td>${transaction.user_name || "N/A"}</td>
-                <td>${transaction.total_amount}</td>
-                <td>${transaction.payment_method || "N/A"}</td>
-            `;
-            salesTableBody.appendChild(row);
-        });
+        if (transactions.length === 0) {
+            salesTableBody.innerHTML = "<tr><td colspan='4'>No transactions found.</td></tr>";
+        } else {
+            // Menambahkan data transaksi ke dalam tabel
+            transactions.forEach(transaction => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${new Date(transaction.transaction_date).toLocaleString()}</td>
+                    <td>${transaction.user_name || "N/A"}</td>
+                    <td>${transaction.total_amount}</td>
+                    <td>${transaction.payment_method || "N/A"}</td>
+                `;
+                salesTableBody.appendChild(row);
+            });
+        }
 
         // Update tombol pagination
         updatePagination();
@@ -50,6 +58,7 @@ async function fetchTransactions(page = 1) {
         Swal.fire("Error", "Failed to load transactions", "error");
     }
 }
+
 
 // Fungsi untuk mengupdate tombol pagination
 function updatePagination() {
