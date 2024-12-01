@@ -40,17 +40,15 @@
 
     addCSS("https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.css");
 
-    // Fungsi untuk mengambil kategori produk
     const fetchCategories = async () => {
       try {
-        const response = await fetch("https://pos-ochre.vercel.app/api/categories"); // Ganti dengan API yang sesuai
+        const response = await fetch("https://pos-ochre.vercel.app/api/categories");
         const categories = await response.json();
 
-        // Isi dropdown kategori dengan data kategori
         const categorySelect = document.getElementById("product-category");
         categories.forEach(category => {
           const option = document.createElement("option");
-          option.value = category.name;  // Nama kategori (bukan ID)
+          option.value = category.id;  // Simpan UUID kategori
           option.textContent = category.name;  // Tampilkan nama kategori
           categorySelect.appendChild(option);
         });
@@ -64,36 +62,30 @@
       }
     };
 
-    // Muat kategori saat halaman dimuat
     window.onload = fetchCategories;
 
-    // Menangani form submit
     document
       .getElementById("add-product-form")
       .addEventListener("submit", async function (event) {
         event.preventDefault();
 
-        // Ambil nilai form
         const productName = document.getElementById("product-name").value;
         const productPrice = parseFloat(document.getElementById("product-price").value);
-        const productCategory = document.getElementById("product-category").value; // Nama kategori
+        const productCategoryId = document.getElementById("product-category").value;
         const productDescription = document.getElementById("product-description").value;
         const productStock = parseInt(document.getElementById("product-stock").value, 10);
 
-        // Buat objek produk baru
         const newProduct = {
           name: productName,
           price: productPrice,
-          category: productCategory, // Kirimkan nama kategori
+          category_id: productCategoryId, // Kirimkan UUID kategori
           description: productDescription,
           stock: productStock,
         };
 
-        // Ambil token dari localStorage
-        const token = localStorage.getItem("token"); // Pastikan token disimpan di localStorage
+        const token = localStorage.getItem("token");
 
         if (!token) {
-          // Jika tidak ada token, tampilkan pesan kesalahan
           Swal.fire({
             icon: "error",
             title: "Unauthorized",
@@ -102,7 +94,6 @@
           return;
         }
 
-        // Tampilkan konfirmasi sebelum menambah produk
         const result = await Swal.fire({
           icon: "warning",
           title: "Are you sure you want to add this product?",
@@ -119,14 +110,13 @@
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
-                  "Authorization": `Bearer ${token}` // Menambahkan header Authorization dengan token
+                  "Authorization": `Bearer ${token}`,
                 },
                 body: JSON.stringify(newProduct),
               }
             );
 
             if (response.ok) {
-              // Tampilkan pesan sukses
               await Swal.fire({
                 icon: "success",
                 title: "Added",
@@ -152,7 +142,6 @@
         }
       });
 
-    // Tombol kembali
     document
       .getElementById("backToProductBtn")
       .addEventListener("click", function () {
