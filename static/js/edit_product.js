@@ -50,9 +50,12 @@ const fetchProduct = async (productId) => {
             title: "Loading...",
             text: "Fetching product data...",
             allowOutsideClick: false,
-            didOpen: () => Swal.showLoading(),
+            didOpen: () => {
+                Swal.showLoading();
+            }
         });
 
+        // Ambil token dari localStorage
         const token = localStorage.getItem("token");
         if (!token) {
             throw new Error("Authorization token not found. Please log in again.");
@@ -62,8 +65,8 @@ const fetchProduct = async (productId) => {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
-            },
+                "Authorization": `Bearer ${token}`
+            }
         });
 
         if (!response.ok) {
@@ -73,24 +76,23 @@ const fetchProduct = async (productId) => {
         const product = await response.json();
         Swal.close();
 
-        // Set elemen form dengan validasi
-        setElementValue("name", product.name);
-        setElementValue("price", product.price);
-        setElementValue("description", product.description || "");
-        setElementValue("stock", product.stock);
+        // Isi data di form
+        document.getElementById("name").value = product.name;
+        document.getElementById("price").value = product.price;
+        document.getElementById("description").value = product.description || "";
+        document.getElementById("stock").value = product.stock;
 
-        // Populate kategori
+        // Populate kategori dropdown dengan ID kategori produk yang sesuai
         populateCategories(product.category);
     } catch (error) {
         Swal.fire({
             icon: "error",
             title: "Error",
-            text: error.message || "Failed to fetch product data. Please try again.",
+            text: error.message || "Failed to fetch product data. Please try again."
         });
         console.error(error);
     }
 };
-
 
 // Fungsi untuk memperbarui data produk
 document.getElementById("edit-product-form").addEventListener("submit", async function(event) {
@@ -175,4 +177,3 @@ window.onload = function() {
         });
     }
 };
-// 2
