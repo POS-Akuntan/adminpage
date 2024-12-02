@@ -7,6 +7,66 @@
     <title>Dashboard Akuntansi</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="static/css/product.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .register-container {
+            max-width: 400px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        input, select, button {
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .back-btn {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
 </head>
 
 <body>
@@ -95,9 +155,9 @@
         </form>
 
         <!-- Back to Admin Page -->
-        <div class="back-btn">
+        <!-- <div class="back-btn">
             <button onclick="window.location.href='adminpage.html';">Back to Admin Page</button>
-        </div>
+        </div> -->
     </div>
 
     <script>
@@ -128,7 +188,7 @@
                 const result = await response.json();
                 if (response.ok) {
                     alert(result.message); // Tampilkan pesan sukses
-                    window.location.href = "adminpage.html"; // Redirect ke halaman admin
+                    window.location.href = "http://127.0.0.1:5500/adminpage/Business.html"; // Redirect ke halaman admin
                 } else {
                     alert("Error: " + result.message);
                 }
