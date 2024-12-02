@@ -52,7 +52,7 @@ function applyPagination(data, rowsPerPage = 8) {
                 <td>${transaction.payment_method || "N/A"}</td>
                 <td>
                     <button class="view-details-btn" onclick="fetchTransactionDetails('${transaction.id}')">
-                        View Details
+                        <i class="fas fa-search"></i>
                     </button>
                 </td>
             `;
@@ -78,6 +78,7 @@ function applyPagination(data, rowsPerPage = 8) {
     displayPage(currentPage);
     createPaginationButtons();
 }
+
 
 // Fungsi untuk memanggil API detail transaksi
 async function fetchTransactionDetails(transactionId) {
@@ -105,11 +106,10 @@ async function fetchTransactionDetails(transactionId) {
         console.log("Transaction Details:", transactionDetails);
 
         if (transactionDetails.length > 0) {
-            const transaction = transactionDetails[0]; // Ambil elemen pertama array
-        
-            Swal.fire({
-                title: "Transaction Details",
-                html: `
+            let detailsHtml = '';
+            // Loop untuk semua produk dalam transaksi
+            transactionDetails.forEach(transaction => {
+                detailsHtml += `
                     <p><strong>ID:</strong> ${transaction.id}</p>
                     <p><strong>Transaction ID:</strong> ${transaction.transaction_id}</p>
                     <p><strong>Product ID:</strong> ${transaction.product_id}</p>
@@ -117,7 +117,13 @@ async function fetchTransactionDetails(transactionId) {
                     <p><strong>Unit Price:</strong> ${transaction.unit_price}</p>
                     <p><strong>Total Price:</strong> ${transaction.total_price}</p>
                     <p><strong>Product Name:</strong> ${transaction.product_name}</p>
-                `,
+                    <hr>
+                `;
+            });
+
+            Swal.fire({
+                title: "Transaction Details",
+                html: detailsHtml,
                 icon: "info",
             });
         } else {
@@ -129,6 +135,7 @@ async function fetchTransactionDetails(transactionId) {
         Swal.fire("Error", "Failed to fetch transaction details", "error");
     }
 }
+
 
 // Ekspose fungsi ke global scope
 window.fetchTransactionDetails = fetchTransactionDetails;
