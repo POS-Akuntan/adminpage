@@ -45,10 +45,16 @@ function applyPagination(data, rowsPerPage = 8) {
         for (const transaction of paginatedData) {
             const row = document.createElement("tr");
             row.innerHTML = `
+                <td>${transaction.id}</td>
                 <td>${new Date(transaction.transaction_date).toLocaleString()}</td>
                 <td>${transaction.user_name || "N/A"}</td>
                 <td>${transaction.total_amount}</td>
                 <td>${transaction.payment_method || "N/A"}</td>
+                <td>
+                    <button class="view-details-btn" onclick="fetchTransactionDetails('${transaction.id}')">
+                        View Details
+                    </button>
+                </td>
             `;
             salesTableBody.appendChild(row);
         }
@@ -73,6 +79,62 @@ function applyPagination(data, rowsPerPage = 8) {
     createPaginationButtons();
 }
 
+// Fungsi untuk memanggil API detail transaksi
+async function fetchTransactionDetails(transactionId) {
+    console.log("Fetching transaction details for ID:", transactionId);
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            Swal.fire("Error", "Authorization token not found. Please log in.", "error");
+            return;
+        }
+
+        const response = await fetch(`https://pos-ochre.vercel.app/api/transaction-items/${transactionId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`, // Sertakan token di header
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch transaction details");
+        }
+
+        const transactionDetails = await response.json();
+        console.log("Transaction Details:", transactionDetails);
+
+        if (transactionDetails.length > 0) {
+            const transaction = transactionDetails[0]; // Ambil elemen pertama array
+        
+            Swal.fire({
+                title: "Transaction Details",
+                html: `
+                    <p><strong>ID:</strong> ${transaction.id}</p>
+                    <p><strong>Transaction ID:</strong> ${transaction.transaction_id}</p>
+                    <p><strong>Product ID:</strong> ${transaction.product_id}</p>
+                    <p><strong>Quantity:</strong> ${transaction.quantity}</p>
+                    <p><strong>Unit Price:</strong> ${transaction.unit_price}</p>
+                    <p><strong>Total Price:</strong> ${transaction.total_price}</p>
+                    <p><strong>Product Name:</strong> ${transaction.product_name}</p>
+                `,
+                icon: "info",
+            });
+        } else {
+            Swal.fire("Error", "No transaction details found.", "error");
+        }
+        
+    } catch (error) {
+        console.error("Error fetching transaction details:", error);
+        Swal.fire("Error", "Failed to fetch transaction details", "error");
+    }
+}
+
+// Ekspose fungsi ke global scope
+window.fetchTransactionDetails = fetchTransactionDetails;
+
+
+// Fungsi untuk memuat data pengguna
 async function fetchUsers() {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -85,7 +147,7 @@ async function fetchUsers() {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`, // Menambahkan token di header
+                "Authorization": `Bearer ${token}`,
             },
         });
 
@@ -119,6 +181,7 @@ async function fetchUsers() {
     }
 }
 
+// Fungsi untuk statistik transaksi
 async function fetchStatistics() {
     const token = localStorage.getItem("token");
     if (!token) {
