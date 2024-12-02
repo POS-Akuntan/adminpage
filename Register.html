@@ -1,30 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register Page</title>
-    <link rel="stylesheet" href="static/css/login.css">
+    <title>Dashboard Akuntansi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="static/css/product.css">
 </head>
-<body>
-    <div class="login-container">
-        <h2>Register</h2>
-        <form id="loginForm">
-            <input type="name" id="name" name="name" placeholder="Name" required>
-            <input type="email" id="email" name="email" placeholder="E-Mail" required>
-            <input type="password" id="password" name="password"   placeholder="Password" required>
-            <input type="umkm-name" id="umkm_name" name="umkm-name" placeholder="UMKM Name" required>
-            <button id="login-btn">Register</button>
-            <button id="back-btn" class="link-style">Back to main menu</button>
-            <div class="forgot-password">   
-                <a href="/templates/whatsauth.html">Use Whatsauth</a>
-                <a href="#"></a>
-            </div>
 
+<body>
+    <!-- Navigation Bar -->
+    <header>
+        <!-- Tombol menu untuk perangkat mobile -->
+        <button class="menu-toggle" aria-expanded="false" onclick="toggleMenu()">☰ Menu</button>
+      
+        <!-- Navigasi (disembunyikan pada perangkat mobile) -->
+        <nav>
+          <ul class="nav-menu">
+            <li><a href="index.html">Dashboard</a></li>
+            <li><a href="Business.html">Business</a></li>
+            <li><a href="category.html">Category</a></li>
+            <li><a href="Product.html" >Product</a></li>
+            <li style="background-color: #97ced1;"><a href="Register.html" style="color: rgb(255, 255, 255);">Register</a></li>
+            <li><a href="Contacts.html">Contact Us</a></li>
+          </ul>
+        </nav>    
+        <!-- Profil pengguna -->
+        <div class="user-profile">
+          <img src="static/img/ImageAcc.png" alt="User Profile" class="user-image" id="user-avatar" />
+          <div class="dropdown" id="profile-dropdown">
+            <button onclick="toggleDropdown()" class="dropbtn">▼</button>
+            <div class="dropdown-content" id="dropdown-content">
+              <button id="logout-btn" class="link-style">Logout</button>
+              <script>
+                  // Fungsi logout
+                  document.getElementById("logout-btn").addEventListener("click", async () => {
+                      const token = localStorage.getItem("token"); // Ambil token dari localStorage
+              
+                      if (!token) {
+                          alert("Anda belum login.");
+                          return;
+                      }
+              
+                      try {
+                          // Lakukan permintaan logout ke endpoint
+                          const response = await fetch("https://pos-ochre.vercel.app/api/auth/logout", {
+                              method: "POST",
+                              headers: {
+                                  "Authorization": `Bearer ${token}`, // Sertakan token dalam header
+                                  "Content-Type": "application/json"
+                              }
+                          });
+              
+                          if (response.ok) {
+                              // Hapus token dari localStorage
+                              localStorage.removeItem("token");
+                              alert("Logout berhasil.");
+              
+                              // Redirect ke halaman login
+                              window.location.href = "login.html"; // Sesuaikan dengan URL halaman login Anda
+                          } else {
+                              const error = await response.json();
+                              alert("Gagal logout: " + error.message);
+                          }
+                      } catch (err) {
+                          console.error("Error saat logout:", err);
+                          alert("Terjadi kesalahan. Silakan coba lagi.");
+                      }
+                  });
+              </script>
+            </div>
+          </div>
+        </div>
+      </header>
+
+    <!-- Register User Section -->
+    <div class="container">
+        <div class="product-header">
+            <h1>Register User</h1>
+        </div>
+
+        <!-- Register Form -->
+        <form id="registerForm">
+            <input type="text" id="name" name="name" placeholder="Name" required>
+            <input type="email" id="email" name="email" placeholder="E-Mail" required>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+            <input type="text" id="phone_number" name="phone_number" placeholder="Phone Number" required>
+            <select id="role" name="role" required>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+            <button type="submit" id="register-btn">Register</button>
         </form>
+
+        <!-- Back to Admin Page -->
+        <div class="back-btn">
+            <button onclick="window.location.href='adminpage.html';">Back to Admin Page</button>
+        </div>
     </div>
 
-<script src="static/js/register.js"></script>
+    <script>
+        document.getElementById("registerForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
 
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const role = document.getElementById("role").value;
+            const phone_number = document.getElementById("phone_number").value;
+
+            try {
+                const response = await fetch("https://pos-ochre.vercel.app/api/auth/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        email: email,
+                        password: password,
+                        role: role,
+                        phone_number: phone_number
+                    })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert(result.message); // Tampilkan pesan sukses
+                    window.location.href = "adminpage.html"; // Redirect ke halaman admin
+                } else {
+                    alert("Error: " + result.message);
+                }
+            } catch (err) {
+                console.error("Error saat registrasi:", err);
+                alert("Terjadi kesalahan saat registrasi. Silakan coba lagi.");
+            }
+        });
+    </script>
+
+    <script>
+        function toggleMenu() {
+            const navMenu = document.querySelector('.nav-menu');
+            navMenu.classList.toggle('show');
+        }
+        
+        function toggleDropdown() {
+            const dropdownContent = document.getElementById('dropdown-content');
+            dropdownContent.classList.toggle('show');
+        }
+    </script>
 </body>
+
 </html>
