@@ -9,6 +9,32 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
     <link rel="stylesheet" href="static/css/style.css" />
+    <script type="module">
+      import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11/src/sweetalert2.js";
+      import { addCSS } from "https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.9/element.js";
+    
+      addCSS("https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.css");
+    
+      // Fungsi untuk melakukan validasi localStorage
+      function validateLogin() {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          Swal.fire({
+            title: "Akses Ditolak",
+            text: "Silahkan login terlebih dahulu",
+            icon: "warning",
+            confirmButtonText: "Login",
+          }).then(() => {
+            // Redirect ke halaman login jika diperlukan
+            window.location.href = "https://pos-akuntan.github.io/";
+          });
+        }
+      }
+    
+      // Panggil fungsi validasi saat halaman dimuat
+      document.addEventListener("DOMContentLoaded", validateLogin);
+    </script>
+    
 
     <style>
       /* Reset dan Font Smoothing */
@@ -304,14 +330,26 @@
         <div class="dropdown" id="profile-dropdown">
           <button onclick="toggleDropdown()" class="dropbtn">▼</button>
           <div class="dropdown-content" id="dropdown-content">
-            <!-- <a href="profile.html">Profile</a> -->
-            <!-- Tombol Logout -->
-            <button id="logout-btn" class="link-style">Logout</button>
-
+            <a href="profile.html">Profile</a>
+            <a href="#" id="logoutBtn">Logout</a>
             <script>
+              document.getElementById("logoutBtn").addEventListener("click", function (event) {
+                event.preventDefault(); // Mencegah link untuk melakukan redirect langsung
+            
+                // Menghapus item dari localStorage
+                localStorage.removeItem("token");
+                localStorage.removeItem("userEmail");
+                localStorage.removeItem("userName");
+                localStorage.removeItem("userPhoneNumber");
+            
+                // Redirect ke halaman login setelah logout
+                window.location.href = "login.html";
+              });
+            </script>
+            <!-- <script>
               // Fungsi logout
               document
-                .getElementById("logout-btn")
+                .getElementById("logoutbtn")
                 .addEventListener("click", async () => {
                   const token = localStorage.getItem("token"); // Ambil token dari localStorage
 
@@ -350,7 +388,7 @@
                     alert("Terjadi kesalahan saat logout. Silakan coba lagi.");
                   }
                 });
-            </script>
+            </script> -->
           </div>
         </div>
       </div>
