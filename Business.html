@@ -75,12 +75,26 @@
       <div class="user-profile">
           <img src="static/img/ImageAcc.png" alt="User Profile" class="user-image" id="user-avatar" />
           <div class="dropdown" id="profile-dropdown">
-              <button onclick="toggleDropdown()" class="dropbtn">▼</button>
-              <div class="dropdown-content" id="dropdown-content">
-                  <!-- <a href="profile.html">Profile</a> -->
-                  <button id="logout-btn" class="link-style">Logout</button>
+            <button onclick="toggleDropdown()" class="dropbtn">▼</button>
+            <div class="dropdown-content" id="dropdown-content">
+              <a href="profile.html">Profile</a>
+              <a href="#" id="logoutBtn">Logout</a>
+              <script>
+                document.getElementById("logoutBtn").addEventListener("click", function (event) {
+                  event.preventDefault(); // Mencegah link untuk melakukan redirect langsung
+              
+                  // Menghapus item dari localStorage
+                  localStorage.removeItem("token");
+                  localStorage.removeItem("userEmail");
+                  localStorage.removeItem("userName");
+                  localStorage.removeItem("userPhoneNumber");
+              
+                  // Redirect ke halaman login setelah logout
+                  window.location.href = "https://pos-akuntan.github.io/";
+                });
+              </script>
 
-                  <script>
+                  <!-- <script>
                       // Fungsi logout
                       document.getElementById("logout-btn").addEventListener("click", async () => {
                           const token = localStorage.getItem("token"); // Ambil token dari localStorage
@@ -116,7 +130,7 @@
                               alert("Terjadi kesalahan. Silakan coba lagi.");
                           }
                       });
-                  </script>
+                  </script> -->
               </div>
           </div>
       </div>
