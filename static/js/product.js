@@ -268,10 +268,10 @@ async function deleteProduct(productId) {
   window.onload = fetchProducts;
   
   // Event listeners for adding new product and exporting to CSV
-  document.getElementById("exportCsvBtn").addEventListener("click", function () {
-    window.location.href =
-      "https://pos-ochre.vercel.app/api/products-export-csv"; // Updated URL
-  });
+  // document.getElementById("exportCsvBtn").addEventListener("click", function () {
+  //   window.location.href =
+  //     "https://pos-ochre.vercel.app/api/products-export-csv"; // Updated URL
+  
   
   document.getElementById("addProductBtn").addEventListener("click", function () {
     window.location.href = "AddProduct.html";
