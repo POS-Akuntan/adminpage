@@ -3,97 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
+    <title>Profile Page</title>
     <link rel="stylesheet" href="static/css/profile.css">
 </head>
 <body>
     <div class="profile-page">
         <div class="content">
           <div class="content__cover">
-            <!-- <div class="content__avatar"><img src="Dummy/static/img/ImageAcc.png" alt=""></div> -->
-            <div class="content__bull"><span></span><span></span><span></span><span></span><span></span>
+            <div class="content__bull">
+              <span></span><span></span><span></span><span></span><span></span>
             </div>
           </div>
-          <div class="content__actions"><a href="Edit_profile.html">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" a>
+          <div class="content__actions">
+            <a href="Edit_profile.html">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
                 <path fill="currentColor" d="M192 256A112 112 0 1 0 80 144a111.94 111.94 0 0 0 112 112zm76.8 32h-8.3a157.53 157.53 0 0 1-68.5 16c-24.6 0-47.6-6-68.5-16h-8.3A115.23 115.23 0 0 0 0 403.2V432a48 48 0 0 0 48 48h288a48 48 0 0 0 48-48v-28.8A115.23 115.23 0 0 0 268.8 288z"></path>
                 <path fill="currentColor" d="M480 256a96 96 0 1 0-96-96 96 96 0 0 0 96 96zm48 32h-3.8c-13.9 4.8-28.6 8-44.2 8s-30.3-3.2-44.2-8H432c-20.4 0-39.2 5.9-55.7 15.4 24.4 26.3 39.7 61.2 39.7 99.8v38.4c0 2.2-.5 4.3-.6 6.4H592a48 48 0 0 0 48-48 111.94 111.94 0 0 0-112-112z"></path>
-              </svg><span>Edit Profile</span></a><a href="#"></a></div>
+              </svg>
+              <span>Edit Profile</span>
+            </a>
+          </div>
           <div class="content__title">
-            <h1 id="name"></h1><span>Bandung, Indonesia</span>
+            <main class="container">
+              <div class="row justify-content-center mt-5">
+                <div class="col-md-6">
+                  <div class="card text-center">
+                    <div class="card-body">
+                      <h3 id="userGreeting">Hello, User!</h3>
+                      <p id="userEmail" class="text-muted">user@example.com</p>
+                      <p id="userRole" class="fw-bold">Role: User</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
           </div>
-          <div class="content__description">
-            <p id="email"></p>
-            <p id="password"></p>
-            <p id="umkmName"></p>
-          </div>
-          <div class="content__button"><a class="button" href="index.html">
+          <div class="content__button">
+            <a class="button" href="index.html">
               <div class="button__border"></div>
               <div class="button__bg"></div>
-              <p class="button__text">Back to Main Menu</p></a></div>
-        </div>
-        <div class="bg">
-          <div><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <p class="button__text">Back to Main Menu</p>
+            </a>
           </div>
         </div>
-        <div class="theme-switcher-wrapper" id="theme-switcher-wrapper"><span>Themes color</span>
-          <ul>
-            <li><em class="is-active" data-theme="orange"></em></li>
-            <li><em data-theme="green"></em></li>
-            <li><em data-theme="purple"></em></li>
-            <li><em data-theme="blue"></em></li>
-          </ul>
-        </div>
-        <div class="theme-switcher-button" id="theme-switcher-button">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-            <path fill="currentColor" d="M352 0H32C14.33 0 0 14.33 0 32v224h384V32c0-17.67-14.33-32-32-32zM0 320c0 35.35 28.66 64 64 64h64v64c0 35.35 28.66 64 64 64s64-28.65 64-64v-64h64c35.34 0 64-28.65 64-64v-32H0v32zm192 104c13.25 0 24 10.74 24 24 0 13.25-10.75 24-24 24s-24-10.75-24-24c0-13.26 10.75-24 24-24z"></path>
-          </svg>
+        <div class="bg">
+          <div>
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
         </div>
       </div>
-</body>
-      <!-- <script src="/Dummy/static/js/profile.js"></script> -->
-       <script>
-        document.addEventListener("DOMContentLoaded", () => {
-          const baseUrl = "http://localhost:8081";
-          
-          async function fetchUserData() {
-              const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
-      
-              // if (!token) {
-              //     alert("Please log in first");
-              //     window.location.href = "login.html"; // Redirect to login page if no token
-              //     return;
-              // }
-      
-              try {
-                const userId = "6715b4a934319fb34ae33dc2"; // ganti dengan ID user yang sesuai
-                const response = await fetch(`${baseUrl}/users/${userId}`, {
-                 method: "GET",
-                  headers:{
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${token}`
-                          }         
-            });
 
-      
-                  if (!response.ok) {
-                      throw new Error("Failed to fetch user data");
-                  }
-      
-                  const user = await response.json();
-      
-                  // Update profile content in profile.html with data retrieved from backend
-                  document.querySelector(".content__title h1").textContent = user.name || "Name not available";
-                  // document.querySelector(".content__title span").textContent = user.location || "Location not available";
-                  document.querySelector(".content__description p:nth-child(1)").textContent = `Email : ${user.email || "Email not available"}`;
-                  document.querySelector(".content__description p:nth-child(2)").textContent = `Password : ${"*".repeat(user.password ? user.password.length : 4)}`;
-                  document.querySelector(".content__description p:nth-child(3)").textContent = `Business Name : ${user.umkmame || "Business not available"}`;
-              } catch (error) {
-                  console.error("Error fetching user data:", error);
-              }
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          function parseJwt(token) {
+            try {
+              const base64Url = token.split('.')[1];
+              const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+              const jsonPayload = decodeURIComponent(
+                atob(base64)
+                  .split('')
+                  .map(function (c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                  })
+                  .join('')
+              );
+              return JSON.parse(jsonPayload);
+            } catch (e) {
+              console.error("Invalid token:", e);
+              return null;
+            }
           }
       
-          fetchUserData(); // Call function to retrieve user data
-      });
-       </script>
+          const token = localStorage.getItem("token");
+      
+          if (token) {
+            const userData = parseJwt(token);
+      
+            if (userData) {
+              // Atur role yang ditampilkan
+              let displayedRole = userData.role === "user" ? "Kasir" : userData.role;
+      
+              // Tampilkan data ke elemen HTML
+              document.getElementById("userGreeting").textContent = `Hello, ${userData.email.split('@')[0]}!`;
+              document.getElementById("userEmail").textContent = userData.email;
+              document.getElementById("userRole").textContent = `Role: ${displayedRole}`;
+            } else {
+              console.warn("Unable to decode token.");
+            }
+          } else {
+            console.warn("Token not found in localStorage.");
+          }
+        });
+      </script>
+</body>
 </html>
