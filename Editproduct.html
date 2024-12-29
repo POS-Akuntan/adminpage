@@ -5,11 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Edit Product</title>
     <link rel="stylesheet" href="static/css/edit_product.css" />
+    <style>
+      /* Inline CSS to ensure uniformity if the CSS file is incomplete */
+      .form-container input,
+      .form-container select,
+      .form-container textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      .form-container textarea {
+        height: 100px;
+        resize: none;
+      }
+
+      .form-container button {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      .form-container button:hover {
+        background-color: #45a049;
+      }
+    </style>
   </head>
   <body>
     <div class="container">
       <h1>Edit Product</h1>
-      <form id="edit-product-form">
+      <form id="edit-product-form" class="form-container">
         <label for="product-name">Name Product:</label>
         <input type="text" id="product-name" required />
 
@@ -22,10 +54,13 @@
         </select>
 
         <label for="product-description">Description:</label>
-        <input type="text" id="product-description" required />
+        <textarea id="product-description" required></textarea>
 
         <label for="product-stock">Stock:</label>
         <input type="number" id="product-stock" required />
+
+        <label for="product-image">Image:</label>
+        <input type="file" id="product-image" accept="image/*" />
 
         <button type="submit">Update Product</button>
       </form>
@@ -34,77 +69,56 @@
     </div>
 
     <script type="module">
-      // Import SweetAlert dan JSCroot
       import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11/src/sweetalert2.js";
       import { addCSS } from "https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.9/element.js";
 
-      // Tambahkan CSS untuk SweetAlert
       addCSS("https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.css");
 
-      // Fungsi untuk kembali ke halaman Product
-      document
-        .getElementById("Backproductbtn")
-        .addEventListener("click", function () {
-          window.location.href = "Product.html";
-        });
+      document.getElementById("Backproductbtn").addEventListener("click", () => {
+        window.location.href = "Product.html";
+      });
 
-      // Fungsi untuk mengambil data produk berdasarkan ID
       const fetchProduct = async (productId) => {
         try {
           Swal.fire({
             title: "Loading...",
             text: "Fetching product data...",
             allowOutsideClick: false,
-            didOpen: () => {
-              Swal.showLoading();
-            },
+            didOpen: () => Swal.showLoading(),
           });
 
           const token = localStorage.getItem("token");
-          if (!token) {
-            throw new Error("Authorization token not found. Please log in again.");
-          }
+          if (!token) throw new Error("Authorization token not found. Please log in again.");
 
           const response = await fetch(
             `https://pos-ochre.vercel.app/api/products/${productId}`,
             {
               method: "GET",
               headers: {
-                "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
               },
             }
           );
 
-          if (!response.ok) {
-            throw new Error(`Error ${response.status}: ${await response.text()}`);
-          }
+          if (!response.ok) throw new Error(await response.text());
 
           const product = await response.json();
           Swal.close();
 
-          // Isi data produk ke dalam form
           document.getElementById("product-name").value = product.name || "";
           document.getElementById("product-price").value = product.price || 0;
           document.getElementById("product-description").value = product.description || "";
           document.getElementById("product-stock").value = product.stock || 0;
 
-          // Update kategori (category_id)
           const categorySelect = document.getElementById("product-category");
-          const selectedCategory = product.category; // Assuming category is an ID
-
-          // Fetch the list of categories (you can replace this with your API call)
           const categories = await fetchCategories();
+
           categories.forEach((category) => {
             const option = document.createElement("option");
-            option.value = category.id; // The category ID
-            option.textContent = category.name; // The category name to display
+            option.value = category.id;
+            option.textContent = category.name;
+            if (category.id === product.id_categories) option.selected = true;
             categorySelect.appendChild(option);
-
-            // Set the selected category
-            if (category.id === selectedCategory) {
-              option.selected = true;
-            }
           });
         } catch (error) {
           Swal.fire({
@@ -112,37 +126,64 @@
             title: "Error",
             text: error.message || "Failed to fetch product data.",
           });
-          console.error(error);
         }
       };
 
-      // Fungsi untuk mengambil daftar kategori
       const fetchCategories = async () => {
         try {
-          const response = await fetch(`https://pos-ochre.vercel.app/api/categories`);
-          if (!response.ok) {
-            throw new Error("Failed to fetch categories.");
-          }
-          return await response.json(); // Assuming the API returns an array of categories
+          const response = await fetch("https://pos-ochre.vercel.app/api/categories");
+          if (!response.ok) throw new Error("Failed to fetch categories.");
+          return await response.json();
         } catch (error) {
-          console.error("Error fetching categories:", error);
+          console.error(error);
           return [];
         }
       };
 
-      // Fungsi untuk memperbarui data produk
       document.getElementById("edit-product-form").addEventListener("submit", async function (event) {
         event.preventDefault();
-
+      
+        // Ambil ID produk dari URL
         const productId = new URLSearchParams(window.location.search).get("id");
-        const updatedProduct = {
-          name: document.getElementById("product-name").value,
-          price: parseFloat(document.getElementById("product-price").value),
-          category: document.getElementById("product-category").value, // Submit ID of the category
-          description: document.getElementById("product-description").value,
-          stock: parseInt(document.getElementById("product-stock").value, 10),
-        };
-
+        if (!productId) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Product ID not found. Cannot update product.",
+          });
+          return;
+        }
+      
+        // Ambil data dari form
+        const formData = new FormData();
+        formData.append("name", document.getElementById("product-name").value);
+        formData.append("price", document.getElementById("product-price").value);
+        formData.append("description", document.getElementById("product-description").value);
+        formData.append("stock", document.getElementById("product-stock").value);
+      
+        const categoryId = document.getElementById("product-category").value;
+        if (!categoryId) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Category must be selected.",
+          });
+          return;
+        }
+        formData.append("id_categories", categoryId);
+      
+        // Tambahkan gambar jika ada
+        const imageInput = document.getElementById("product-image");
+        if (imageInput && imageInput.files.length > 0) {
+          formData.append("picture", imageInput.files[0]); // Tambahkan file gambar
+        }
+      
+        // Debug: Log formData ke console
+        for (let pair of formData.entries()) {
+          console.log(`${pair[0]}: ${pair[1]}`);
+        }
+      
+        // Konfirmasi sebelum mengirim permintaan
         const result = await Swal.fire({
           icon: "warning",
           title: "Are you sure?",
@@ -151,14 +192,14 @@
           confirmButtonText: "Yes, update it!",
           cancelButtonText: "No, cancel",
         });
-
+      
         if (result.isConfirmed) {
           try {
             const token = localStorage.getItem("token");
             if (!token) {
               throw new Error("Authorization token not found. Please log in again.");
             }
-
+      
             Swal.fire({
               title: "Updating...",
               text: "Please wait...",
@@ -167,19 +208,16 @@
                 Swal.showLoading();
               },
             });
-
-            const response = await fetch(
-              `https://pos-ochre.vercel.app/api/products/${productId}`,
-              {
-                method: "PUT",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(updatedProduct),
-              }
-            );
-
+      
+            // Kirim permintaan PUT ke server
+            const response = await fetch(`https://pos-ochre.vercel.app/api/products/${productId}`, {
+              method: "PUT",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+              body: formData, // Gunakan FormData
+            });
+      
             if (response.ok) {
               Swal.fire({
                 icon: "success",
@@ -189,7 +227,8 @@
                 window.location.href = "Product.html";
               });
             } else {
-              throw new Error(`Error ${response.status}: ${await response.text()}`);
+              const errorText = await response.text();
+              throw new Error(errorText || "Failed to update the product.");
             }
           } catch (error) {
             Swal.fire({
@@ -201,18 +240,12 @@
           }
         }
       });
+      
 
-      window.onload = function () {
+      window.onload = () => {
         const productId = new URLSearchParams(window.location.search).get("id");
-        if (productId) {
-          fetchProduct(productId);
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "Product ID not found in URL.",
-          });
-        }
+        if (productId) fetchProduct(productId);
+        else Swal.fire({ icon: "error", title: "Error", text: "Product ID not found in URL." });
       };
     </script>
   </body>

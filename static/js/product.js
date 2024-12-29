@@ -162,64 +162,71 @@ function formatRupiah(number) {
   // Function to delete a product
 // Function to delete a product
 async function deleteProduct(productId) {
+  if (!productId) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Invalid product ID.",
+    });
+    return;
+  }
+
   const result = await Swal.fire({
-      icon: "question",
-      title: "Are you sure you want to delete this data?",
-      text: "DELETE",
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, cancel',
+    icon: "question",
+    title: "Are you sure you want to delete this data?",
+    text: "DELETE",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete it!",
+    cancelButtonText: "No, cancel",
   });
 
   if (result.isConfirmed) {
-      try {
-          // Ambil token dari localStorage
-          const token = localStorage.getItem("token");
-          if (!token) {
-              Swal.fire({
-                  icon: "error",
-                  title: "Unauthorized",
-                  text: "Token not found. Please log in again.",
-              });
-              return;
-          }
-
-          // Kirim request DELETE dengan header Authorization
-          const response = await fetch(
-              `https://pos-ochre.vercel.app/api/products/${productId}`,
-              {
-                  method: "DELETE",
-                  headers: {
-                      "Content-Type": "application/json",
-                      "Authorization": `Bearer ${token}`, // Tambahkan token
-                  },
-              }
-          );
-
-          if (response.ok) {
-              Swal.fire({
-                  icon: "success",
-                  title: "Deleted",
-                  text: "Product has been deleted.",
-              });
-              fetchProducts(); // Reload the product list after deletion
-          } else {
-              const errorText = await response.text(); // Ambil pesan error dari server
-              console.error("Failed to delete product:", errorText);
-              Swal.fire({
-                  icon: "error",
-                  title: "Failed",
-                  text: errorText || "Failed to delete the product.",
-              });
-          }
-      } catch (error) {
-          console.error("Error deleting product:", error);
-          Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: "An error occurred while deleting the product.",
-          });
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        Swal.fire({
+          icon: "error",
+          title: "Unauthorized",
+          text: "Token not found. Please log in again.",
+        });
+        return;
       }
+
+      const response = await fetch(
+        `https://pos-ochre.vercel.app/api/products/${productId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Deleted",
+          text: "Product has been deleted.",
+        });
+        fetchProducts(); // Reload daftar produk setelah penghapusan
+      } else {
+        const errorText = await response.text();
+        console.error("Failed to delete product:", errorText);
+        Swal.fire({
+          icon: "error",
+          title: "Failed",
+          text: errorText || "Failed to delete the product.",
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "An error occurred while deleting the product.",
+      });
+    }
   }
 }
 
