@@ -20,10 +20,15 @@ const itemsPerPage = 8; // Number of products per page
 // Function to fetch products from the backend
 async function fetchProducts() {
   try {
-    const response = await fetch("https://pos-ochre.vercel.app/api/products"); // Updated URL
-    products = await response.json(); // Parse the response as JSON
+    // Request data produk
+    const response = await fetch("https://pos-ochre.vercel.app/api/products");
+    if (!response.ok) throw new Error("Failed to fetch products.");
 
-    // Render the product table with initial page
+    // Simpan data produk yang diambil dari backend
+    products = await response.json();
+    console.log("Fetched Products:", products);
+
+    // Render tabel produk dan setup pagination
     renderProductTable(products, currentPage);
     setupPagination(products);
   } catch (error) {
@@ -31,24 +36,23 @@ async function fetchProducts() {
   }
 }
 
-// Function to render product table
+// Fungsi untuk menampilkan tabel produk
 function renderProductTable(productsArray, page) {
   const productTable = document.getElementById("product-table");
 
-  // Clear existing rows
+  // Hapus semua baris produk yang sudah ada sebelumnya
   document.querySelectorAll(".row.product").forEach((row) => row.remove());
 
-  // Calculate start and end index for the current page
+  // Tentukan indeks awal dan akhir untuk data pada halaman ini
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = page * itemsPerPage;
   const paginatedProducts = productsArray.slice(startIndex, endIndex);
 
-  // Loop through the paginated products and create new rows
+  // Render setiap produk pada halaman ini
   paginatedProducts.forEach((product) => {
     const row = document.createElement("div");
     row.classList.add("row", "product");
 
-    // Update 'product.id' to match your actual key (e.g., 'product.id_products')
     row.innerHTML = `
       <div class="cell" data-title="Picture">
         <img src="${product.picture_url || 'static/img/no-image.png'}" style="width: 50px; height: auto;">
@@ -59,10 +63,10 @@ function renderProductTable(productsArray, page) {
       <div class="cell" data-title="Description">${product.description}</div>
       <div class="cell" data-title="Stock">${product.stock}</div>
       <div class="cell">
-        <button type="button" class="btn btn-edit" data-id="${product.id_products}"> <!-- Update this key -->
+        <button type="button" class="btn btn-edit" data-id="${product.id_products}">
           <i class="fas fa-pencil-alt"></i>
         </button>
-        <button type="button" class="btn btn-delete" data-id="${product.id_products}"> <!-- Update this key -->
+        <button type="button" class="btn btn-delete" data-id="${product.id_products}">
           <i class="fas fa-trash-alt"></i>
         </button>
       </div>
@@ -72,13 +76,31 @@ function renderProductTable(productsArray, page) {
   });
 }
 
+// Fungsi untuk redirect ke halaman edit produk dan menyimpan data ke localStorage
+function editProduct(productId) {
+  // Cari data produk berdasarkan ID
+  const selectedProduct = products.find((product) => product.id_products === productId);
+  if (selectedProduct) {
+    // Simpan data produk ke localStorage
+    localStorage.setItem("selectedProduct", JSON.stringify(selectedProduct));
+    console.log("Saved to LocalStorage:", selectedProduct);
 
+    // Redirect ke halaman edit produk
+    window.location.href = `Editproduct.html?id=${productId}`;
+  } else {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Product data not found!",
+    });
+  }
+}
 
-// Event delegation for delete buttons
+// Tambahkan event listener untuk tombol edit dan delete
 document.getElementById("product-table").addEventListener("click", function (event) {
   const target = event.target;
-  const button = target.closest("button"); // Find the nearest button
-  const productId = button?.getAttribute("data-id"); // Get product ID
+  const button = target.closest("button");
+  const productId = button?.getAttribute("data-id");
 
   if (button && button.classList.contains("btn-edit")) {
     editProduct(productId);
@@ -86,73 +108,70 @@ document.getElementById("product-table").addEventListener("click", function (eve
     deleteProduct(productId);
   }
 });
-  
-  // Function to setup pagination
-  function setupPagination(productsArray) {
-    const paginationElement = document.getElementById("pagination");
-    paginationElement.innerHTML = ""; // Clear existing pagination links
-  
-    const totalPages = Math.ceil(productsArray.length / itemsPerPage); // Calculate total pages
-  
-    // Create "Previous" button
-    const prevButton = document.createElement("a");
-    prevButton.href = "#";
-    prevButton.innerHTML = "&laquo;";
-    prevButton.addEventListener("click", () => {
-      if (currentPage > 1) {
-        currentPage--;
-        renderProductTable(products, currentPage);
-        updatePaginationLinks();
-      }
-    });
-    paginationElement.appendChild(prevButton);
-  
-    // Create page number links
-    for (let i = 1; i <= totalPages; i++) {
-      const pageLink = document.createElement("a");
-      pageLink.href = "#";
-      pageLink.innerText = i;
-      if (i === currentPage) {
-        pageLink.classList.add("active");
-      }
-      pageLink.addEventListener("click", (event) => {
-        currentPage = i;
-        renderProductTable(products, currentPage);
-        updatePaginationLinks();
-      });
-      paginationElement.appendChild(pageLink);
+
+// Fungsi untuk memulai saat halaman dimuat
+window.onload = fetchProducts;
+
+// Fungsi untuk setup pagination
+function setupPagination(productsArray) {
+  const paginationElement = document.getElementById("pagination");
+  paginationElement.innerHTML = ""; // Clear existing pagination links
+
+  const totalPages = Math.ceil(productsArray.length / itemsPerPage); // Calculate total pages
+
+  // Create "Previous" button
+  const prevButton = document.createElement("a");
+  prevButton.href = "#";
+  prevButton.innerHTML = "&laquo;";
+  prevButton.addEventListener("click", () => {
+    if (currentPage > 1) {
+      currentPage--;
+      renderProductTable(products, currentPage);
+      updatePaginationLinks();
     }
-  
-    // Create "Next" button
-    const nextButton = document.createElement("a");
-    nextButton.href = "#";
-    nextButton.innerHTML = "&raquo;";
-    nextButton.addEventListener("click", () => {
-      if (currentPage < totalPages) {
-        currentPage++;
-        renderProductTable(products, currentPage);
-        updatePaginationLinks();
-      }
+  });
+  paginationElement.appendChild(prevButton);
+
+  // Create page number links
+  for (let i = 1; i <= totalPages; i++) {
+    const pageLink = document.createElement("a");
+    pageLink.href = "#";
+    pageLink.innerText = i;
+    if (i === currentPage) {
+      pageLink.classList.add("active");
+    }
+    pageLink.addEventListener("click", (event) => {
+      currentPage = i;
+      renderProductTable(products, currentPage);
+      updatePaginationLinks();
     });
-    paginationElement.appendChild(nextButton);
+    paginationElement.appendChild(pageLink);
   }
-  
-  // Function to update the active page link in the pagination
-  function updatePaginationLinks() {
-    const paginationLinks = document.querySelectorAll("#pagination a");
-    paginationLinks.forEach((link) => link.classList.remove("active"));
-  
-    // Highlight the current page link
-    paginationLinks[currentPage].classList.add("active");
-  }
-  
-  // Function to edit a product
-  function editProduct(productId) {
-    // Redirect to edit page, passing the product ID as a query parameter
-    window.location.href = `Editproduct.html?id=${productId}`;
-  }
-  
-// Function to delete a product
+
+  // Create "Next" button
+  const nextButton = document.createElement("a");
+  nextButton.href = "#";
+  nextButton.innerHTML = "&raquo;";
+  nextButton.addEventListener("click", () => {
+    if (currentPage < totalPages) {
+      currentPage++;
+      renderProductTable(products, currentPage);
+      updatePaginationLinks();
+    }
+  });
+  paginationElement.appendChild(nextButton);
+}
+
+// Fungsi untuk update pagination link aktif
+function updatePaginationLinks() {
+  const paginationLinks = document.querySelectorAll("#pagination a");
+  paginationLinks.forEach((link) => link.classList.remove("active"));
+
+  // Highlight current page
+  paginationLinks[currentPage].classList.add("active");
+}
+
+// Fungsi untuk menghapus produk
 async function deleteProduct(productId) {
   if (!productId) {
     Swal.fire({
@@ -208,57 +227,38 @@ async function deleteProduct(productId) {
   }
 }
 
-  
-  
-  
-  // Search Functionality
-  function searchProducts() {
-    const searchQuery = document.getElementById("search-bar").value.toLowerCase();
-    const filteredProducts = products.filter(
-      (product) =>
-        product.name.toLowerCase().includes(searchQuery) ||
-        product.category_name.toLowerCase().includes(searchQuery) ||
-        product.description.toLowerCase().includes(searchQuery)
-    );
-    renderProductTable(filteredProducts, currentPage);
-    setupPagination(filteredProducts); // Update pagination based on filtered products
+// Fungsi pencarian
+function searchProducts() {
+  const searchQuery = document.getElementById("search-bar").value.toLowerCase();
+  const filteredProducts = products.filter(
+    (product) =>
+      product.name.toLowerCase().includes(searchQuery) ||
+      product.category_name.toLowerCase().includes(searchQuery) ||
+      product.description.toLowerCase().includes(searchQuery)
+  );
+  renderProductTable(filteredProducts, currentPage);
+  setupPagination(filteredProducts);
+}
+
+// Fungsi pengurutan
+function sortProducts() {
+  const sortOption = document.getElementById("sort-options").value;
+  let sortedProducts = [...products];
+
+  if (sortOption === "name") {
+    sortedProducts.sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sortOption === "price") {
+    sortedProducts.sort((a, b) => a.price - b.price);
+  } else if (sortOption === "category_name") {
+    sortedProducts.sort((a, b) => a.category_name.localeCompare(b.category_name));
+  } else if (sortOption === "stock") {
+    sortedProducts.sort((a, b) => a.stock - b.stock);
   }
-  
-  // Sort Functionality
-  function sortProducts() {
-    const sortOption = document.getElementById("sort-options").value;
-    let sortedProducts = [...products];
-  
-    if (sortOption === "name") {
-      sortedProducts.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortOption === "price") {
-      sortedProducts.sort((a, b) => a.price - b.price);
-    } else if (sortOption === "category_name") {
-      sortedProducts.sort((a, b) => a.category.localeCompare(b.category));
-    } else if (sortOption === "stock") {
-      sortedProducts.sort((a, b) => a.stock - b.stock);
-    }
-  
-    renderProductTable(sortedProducts, currentPage);
-    setupPagination(sortedProducts); // Update pagination based on sorted products
-  }
-  
-  // Add event listeners for search and sort
-  document.getElementById("search-bar").addEventListener("input", searchProducts);
-  document
-    .getElementById("sort-options")
-    .addEventListener("change", sortProducts);
-  
-  // Call the function to fetch and display products when the page loads
-  window.onload = fetchProducts;
-  
-  // Event listeners for adding new product and exporting to CSV
-  // document.getElementById("exportCsvBtn").addEventListener("click", function () {
-  //   window.location.href =
-  //     "https://pos-ochre.vercel.app/api/products-export-csv"; // Updated URL
-  
-  
-  document.getElementById("addProductBtn").addEventListener("click", function () {
-    window.location.href = "AddProduct.html";
-  });
-  
+
+  renderProductTable(sortedProducts, currentPage);
+  setupPagination(sortedProducts);
+}
+
+// Tambahkan event listener untuk pencarian dan pengurutan
+document.getElementById("search-bar").addEventListener("input", searchProducts);
+document.getElementById("sort-options").addEventListener("change", sortProducts);
