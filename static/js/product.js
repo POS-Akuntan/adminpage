@@ -1,98 +1,91 @@
 // Import JSCroot from the CDN
 import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11/src/sweetalert2.js";
-import {addCSS} from "https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.9/element.js";
+import { addCSS } from "https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.9/element.js";
 
 addCSS("https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.css");
 
-
 // Function to format numbers as Rupiah
 function formatRupiah(number) {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-    }).format(number);
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+  }).format(number);
+}
+
+// Array to store product data retrieved from backend
+let products = [];
+let currentPage = 1;
+const itemsPerPage = 8; // Number of products per page
+
+// Function to fetch products from the backend
+async function fetchProducts() {
+  try {
+    const response = await fetch("https://pos-ochre.vercel.app/api/products"); // Updated URL
+    products = await response.json(); // Parse the response as JSON
+
+    // Render the product table with initial page
+    renderProductTable(products, currentPage);
+    setupPagination(products);
+  } catch (error) {
+    console.error("Error fetching products:", error);
   }
-  
-  // Array to store product data retrieved from backend
-  let products = [];
-  let currentPage = 1;
-  const itemsPerPage = 8; // Number of products per page
-  
-  // Function to fetch products from the backend
-  // Function to fetch products from the backend
-  async function fetchProducts() {
-    try {
-      const response = await fetch(
-        "https://pos-ochre.vercel.app/api/products"
-      ); // Updated URL
-      products = await response.json(); // Parse the response as JSON
-  
-      // Render the product table with initial page
-      renderProductTable(products, currentPage);
-      setupPagination(products);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    }
+}
+
+// Function to render product table
+function renderProductTable(productsArray, page) {
+  const productTable = document.getElementById("product-table");
+
+  // Clear existing rows
+  document.querySelectorAll(".row.product").forEach((row) => row.remove());
+
+  // Calculate start and end index for the current page
+  const startIndex = (page - 1) * itemsPerPage;
+  const endIndex = page * itemsPerPage;
+  const paginatedProducts = productsArray.slice(startIndex, endIndex);
+
+  // Loop through the paginated products and create new rows
+  paginatedProducts.forEach((product) => {
+    const row = document.createElement("div");
+    row.classList.add("row", "product");
+
+    // Update 'product.id' to match your actual key (e.g., 'product.id_products')
+    row.innerHTML = `
+      <div class="cell" data-title="Picture">
+        <img src="${product.picture_url || 'static/img/no-image.png'}" style="width: 50px; height: auto;">
+      </div>
+      <div class="cell" data-title="Name Product">${product.name}</div>
+      <div class="cell" data-title="Unit Price">${formatRupiah(product.price)}</div>
+      <div class="cell" data-title="Category">${product.category_name}</div>
+      <div class="cell" data-title="Description">${product.description}</div>
+      <div class="cell" data-title="Stock">${product.stock}</div>
+      <div class="cell">
+        <button type="button" class="btn btn-edit" data-id="${product.id_products}"> <!-- Update this key -->
+          <i class="fas fa-pencil-alt"></i>
+        </button>
+        <button type="button" class="btn btn-delete" data-id="${product.id_products}"> <!-- Update this key -->
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </div>
+    `;
+
+    productTable.appendChild(row);
+  });
+}
+
+
+
+// Event delegation for delete buttons
+document.getElementById("product-table").addEventListener("click", function (event) {
+  const target = event.target;
+  const button = target.closest("button"); // Find the nearest button
+  const productId = button?.getAttribute("data-id"); // Get product ID
+
+  if (button && button.classList.contains("btn-edit")) {
+    editProduct(productId);
+  } else if (button && button.classList.contains("btn-delete")) {
+    deleteProduct(productId);
   }
-  
-  // Function to render product table
-  function renderProductTable(productsArray, page) {
-    const productTable = document.getElementById("product-table");
-  
-    // Clear existing rows
-    document.querySelectorAll(".row.product").forEach((row) => row.remove());
-  
-    // Calculate start and end index for the current page
-    const startIndex = (page - 1) * itemsPerPage;
-    const endIndex = page * itemsPerPage;
-    const paginatedProducts = productsArray.slice(startIndex, endIndex);
-  
-    // Loop through the paginated products and create new rows
-    paginatedProducts.forEach((product) => {
-      const row = document.createElement("div");
-      row.classList.add("row", "product");
-  
-      row.innerHTML = `
-              <div class="cell" data-title="Product">${product.name}</div>
-              <div class="cell" data-title="Unit Price">${formatRupiah(
-                product.price
-              )}</div>
-              <div class="cell" data-title="Category">${product.category_name}</div>
-              <div class="cell" data-title="Description">${
-                product.description
-              }</div>
-              <div class="cell" data-title="Stock">${product.stock}</div>
-              <div class="cell">
-                  <button type="button" class="btn btn-edit" data-id="${
-                    product.id
-                  }">
-                      <i class="fas fa-pencil-alt"></i> <!-- Edit icon -->
-                  </button>
-                  <button type="button" class="btn btn-delete" data-id="${
-                    product.id
-                  }">
-                      <i class="fas fa-trash-alt"></i> <!-- Delete icon -->
-                  </button>
-              </div>
-          `;
-  
-      productTable.appendChild(row);
-    });
-  }
-  
-  // Event delegation for edit and delete buttons
-  document
-    .getElementById("product-table")
-    .addEventListener("click", function (event) {
-      const target = event.target;
-      const productId = target.closest("button")?.getAttribute("data-id"); // Get product ID from closest button
-  
-      if (target.closest(".btn-edit")) {
-        editProduct(productId); // Call edit function if edit button is clicked
-      } else if (target.closest(".btn-delete")) {
-        deleteProduct(productId); // Call delete function if delete button is clicked
-      }
-    });
+});
   
   // Function to setup pagination
   function setupPagination(productsArray) {
@@ -159,7 +152,6 @@ function formatRupiah(number) {
     window.location.href = `Editproduct.html?id=${productId}`;
   }
   
-  // Function to delete a product
 // Function to delete a product
 async function deleteProduct(productId) {
   if (!productId) {
@@ -173,8 +165,7 @@ async function deleteProduct(productId) {
 
   const result = await Swal.fire({
     icon: "question",
-    title: "Are you sure you want to delete this data?",
-    text: "DELETE",
+    title: "Are you sure you want to delete this product?",
     showCancelButton: true,
     confirmButtonText: "Yes, delete it!",
     cancelButtonText: "No, cancel",
@@ -184,24 +175,16 @@ async function deleteProduct(productId) {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        Swal.fire({
-          icon: "error",
-          title: "Unauthorized",
-          text: "Token not found. Please log in again.",
-        });
-        return;
+        throw new Error("Authorization token not found. Please log in again.");
       }
 
-      const response = await fetch(
-        `https://pos-ochre.vercel.app/api/products/${productId}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`https://pos-ochre.vercel.app/api/products/${productId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.ok) {
         Swal.fire({
@@ -209,23 +192,18 @@ async function deleteProduct(productId) {
           title: "Deleted",
           text: "Product has been deleted.",
         });
-        fetchProducts(); // Reload daftar produk setelah penghapusan
+        fetchProducts(); // Reload product list after deletion
       } else {
         const errorText = await response.text();
-        console.error("Failed to delete product:", errorText);
-        Swal.fire({
-          icon: "error",
-          title: "Failed",
-          text: errorText || "Failed to delete the product.",
-        });
+        throw new Error(errorText || "Failed to delete product.");
       }
     } catch (error) {
-      console.error("Error deleting product:", error);
       Swal.fire({
         icon: "error",
-        title: "Error",
-        text: "An error occurred while deleting the product.",
+        title: "Delete Failed",
+        text: error.message,
       });
+      console.error(error);
     }
   }
 }
