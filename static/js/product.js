@@ -259,6 +259,10 @@ function sortProducts() {
   setupPagination(sortedProducts);
 }
 
+document.getElementById("addProductBtn").addEventListener("click", () => {
+  window.location.href = "AddProduct.html";
+});
+
 // Tambahkan event listener untuk pencarian dan pengurutan
 document.getElementById("search-bar").addEventListener("input", searchProducts);
 document.getElementById("sort-options").addEventListener("change", sortProducts);
