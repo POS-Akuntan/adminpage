@@ -110,7 +110,7 @@ async function fetchTransactionDetails(transactionId) {
             // Loop untuk semua produk dalam transaksi
             transactionDetails.forEach(transaction => {
                 detailsHtml += `
-                    <p><strong>ID:</strong> ${transaction.id}</p>
+                    <p><strong>ID:</strong> ${transaction.id_transactions}</p>
                     <p><strong>Transaction ID:</strong> ${transaction.transaction_id}</p>
                     <p><strong>Product ID:</strong> ${transaction.product_id}</p>
                     <p><strong>Quantity:</strong> ${transaction.quantity}</p>
