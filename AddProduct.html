@@ -5,11 +5,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Add New Product</title>
   <link rel="stylesheet" href="static/css/add_product.css" />
+  <style>
+  .form-container input,
+  .form-container select,
+  .form-container textarea,
+  .form-container #product-image {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+
+  .form-container textarea {
+    height: 100px;
+    resize: none;
+  }
+
+  .form-container button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .form-container button:hover {
+    background-color: #45a049;
+  }
+
+  #product-image-preview {
+    width: 100%;
+    max-width: 100px;
+    max-height: 100px;
+    display: block;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>Add New Product</h1>
-    <form id="add-product-form">
+    <form id="add-product-form" enctype="multipart/form-data">
       <label for="product-name">Name Product:</label>
       <input type="text" id="product-name" required />
 
@@ -17,16 +60,19 @@
       <input type="number" id="product-price" required />
 
       <label for="product-category">Category:</label>
-      <!-- Dropdown untuk kategori -->
       <select id="product-category" required>
         <!-- Opsi kategori akan dimasukkan di sini secara dinamis -->
       </select>
 
       <label for="product-description">Description:</label>
-      <input type="text" id="product-description" required />
+      <textarea id="product-description" required></textarea>
 
       <label for="product-stock">Stock:</label>
       <input type="number" id="product-stock" required />
+
+      <label for="product-image">Image:</label>
+      <img id="product-image-preview" src="static/img/no-image.png" alt="Product Image" />
+      <input type="file" id="product-image" accept="image/*" />
 
       <button type="submit">Add Product</button>
     </form>
@@ -48,8 +94,8 @@
         const categorySelect = document.getElementById("product-category");
         categories.forEach(category => {
           const option = document.createElement("option");
-          option.value = category.id;  // Simpan UUID kategori sebagai value
-          option.textContent = category.name;  // Tampilkan nama kategori
+          option.value = category.id_categories; // Simpan UUID kategori sebagai value
+          option.textContent = category.name; // Tampilkan nama kategori
           categorySelect.appendChild(option);
         });
       } catch (error) {
@@ -65,23 +111,43 @@
     window.onload = fetchCategories;
 
     document
+      .getElementById("product-image")
+      .addEventListener("change", function (event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById("product-image-preview");
+
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            preview.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        } else {
+          preview.src = "static/img/no-image.png";
+        }
+      });
+
+    document
       .getElementById("add-product-form")
       .addEventListener("submit", async function (event) {
         event.preventDefault();
 
         const productName = document.getElementById("product-name").value;
         const productPrice = parseFloat(document.getElementById("product-price").value);
-        const productCategoryId = document.getElementById("product-category").value; // ID kategori
+        const productCategoryId = document.getElementById("product-category").value;
         const productDescription = document.getElementById("product-description").value;
         const productStock = parseInt(document.getElementById("product-stock").value, 10);
+        const productImage = document.getElementById("product-image").files[0];
 
-        const newProduct = {
-          name: productName,
-          price: productPrice,
-          category: productCategoryId, // Kirimkan UUID kategori ke API
-          description: productDescription,
-          stock: productStock,
-        };
+        const formData = new FormData();
+        formData.append("name", productName);
+        formData.append("price", productPrice);
+        formData.append("id_categories", productCategoryId);
+        formData.append("description", productDescription);
+        formData.append("stock", productStock);
+        if (productImage) {
+          formData.append("picture", productImage);
+        }
 
         const token = localStorage.getItem("token");
 
@@ -109,10 +175,9 @@
               {
                 method: "POST",
                 headers: {
-                  "Content-Type": "application/json",
-                  "Authorization": `Bearer ${token}`,
+                  Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(newProduct),
+                body: formData,
               }
             );
 
@@ -150,4 +215,3 @@
   </script>
 </body>
 </html>
-<!-- 5 -->
