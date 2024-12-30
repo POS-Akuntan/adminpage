@@ -98,176 +98,135 @@
 
     </div>
 
-    <script>
-        // Helper function to get the token from localStorage
-        function getToken() {
-            return localStorage.getItem("token");
-        }
-    
-        // Function to handle user registration
-        document.getElementById("registerForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-    
-            const name = document.getElementById("name").value;
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            const role = document.getElementById("role").value;
-            const phone_number = document.getElementById("phone_number").value;
-            const token = getToken();
-    
-            try {
-                const response = await fetch("https://pos-ochre.vercel.app/api/auth/register", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ name, email, password, role, phone_number })
-                });
-    
-                const result = await response.json();
-                if (response.ok) {
-                    alert(result.message);
-                    loadUsers(); // Reload user data
-                } else {
-                    alert("Error: " + result.message);
-                }
-            } catch (err) {
-                console.error("Error during registration:", err);
-                alert("An error occurred during registration. Please try again.");
-            }
-        });
-    
-    
-        // Function to edit a user by showing a popup
-        function editUserPopup(user) {
-            const newName = prompt("Edit Name:", user.name);
-            const newEmail = prompt("Edit Email:", user.email);
-            const newRole = prompt("Edit Role:", user.role);
-            const newPhoneNumber = prompt("Edit Phone Number:", user.phone_number);
-    
-            if (newName || newEmail || newRole || newPhoneNumber) {
-                updateUser(user.id, {
-                    name: newName || user.name,
-                    email: newEmail || user.email,
-                    role: newRole || user.role,
-                    phone_number: newPhoneNumber || user.phone_number,
-                });
-            }
-        }
-    
-        // Function to update a user
-        async function updateUser(userId, updatedData) {
-            try {
-                const token = getToken();
-                const response = await fetch(`https://pos-ochre.vercel.app/api/auth/users/${userId}`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
-                    },
-                    body: JSON.stringify(updatedData),
-                });
-    
-                const result = await response.json();
-                if (response.ok) {
-                    alert(result.message);
-                    loadUsers(); // Reload user data
-                } else {
-                    alert("Error: " + result.message);
-                }
-            } catch (err) {
-                console.error("Error updating user:", err);
-                alert("An error occurred while updating the user. Please try again.");
-            }
-        }
-    
-// Function to toggle user active status
-async function toggleUserStatus(userId, currentStatus) {
-    const newStatus = !currentStatus; // Toggle status
-    const token = getToken();
-
-    try {
-        const response = await fetch(`https://pos-ochre.vercel.app/api/auth/users/${userId}/active`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify({ is_active: newStatus })
-        });
-
-        const result = await response.json();
-        if (response.ok) {
-            alert(result.message);
-            loadUsers(); // Reload the user table
-        } else {
-            alert("Error: " + result.message);
-        }
-    } catch (err) {
-        console.error("Error toggling user status:", err);
-        alert("An error occurred while toggling user status.");
+<script>
+    // Helper function to get the token from localStorage
+    function getToken() {
+        return localStorage.getItem("token");
     }
-}
 
-// Load users and add toggle button
-async function loadUsers() {
-    try {
+    // Function to handle user registration
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const role = document.getElementById("role").value;
+        const phone_number = document.getElementById("phone_number").value;
         const token = getToken();
-        const response = await fetch("https://pos-ochre.vercel.app/api/auth/users", {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${token}`
+
+        try {
+            const response = await fetch("https://pos-ochre.vercel.app/api/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ name, email, password, role, phone_number })
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert(result.message);
+                loadUsers(); // Reload user data
+            } else {
+                alert("Error: " + result.message);
             }
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-            const users = data.users;
-            const tableBody = document.getElementById("userTable").getElementsByTagName("tbody")[0];
-            tableBody.innerHTML = ""; // Clear previous data
-
-            users.forEach(user => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${user.name}</td>
-                    <td>${user.email}</td>
-                    <td>${user.role}</td>
-                    <td>${user.phone_number || "-"}</td>
-                    <td>${new Date(user.created_at).toLocaleString()}</td>
-                    <td>
-                        <button class="edit-btn" data-id="${user.id}" style="background: none; border: none; cursor: pointer;">
-                            <i class="fas fa-pencil-alt" style="color: #007bff;"></i>
-                        </button>
-                        <button class="toggle-status-btn" data-id="${user.id}" data-status="${user.is_active}" style="background: none; border: none; cursor: pointer;">
-                            <i class="fas ${user.is_active ? 'fa-toggle-on' : 'fa-toggle-off'}" style="color: ${user.is_active ? '#28a745' : '#dc3545'};"></i>
-                        </button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-
-            // Add event listeners for toggle buttons
-            document.querySelectorAll(".toggle-status-btn").forEach(button => {
-                button.addEventListener("click", (e) => {
-                    const userId = e.target.closest("button").getAttribute("data-id");
-                    const currentStatus = e.target.closest("button").getAttribute("data-status") === "true";
-                    toggleUserStatus(userId, currentStatus);
-                });
-            });
-        } else {
-            alert("Error: " + data.message);
+        } catch (err) {
+            console.error("Error during registration:", err);
+            alert("An error occurred during registration. Please try again.");
         }
-    } catch (err) {
-        console.error("Error loading users:", err);
+    });
+
+    // Function to toggle user active status
+    async function toggleUserStatus(userId, currentStatus) {
+        const newStatus = !currentStatus; // Toggle status
+        const token = getToken();
+
+        try {
+            const response = await fetch(`https://pos-ochre.vercel.app/api/auth/users/${userId}/active`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ is_active: newStatus })
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert(result.message);
+                loadUsers(); // Reload the user table
+            } else {
+                alert("Error: " + result.message);
+            }
+        } catch (err) {
+            console.error("Error toggling user status:", err);
+            alert("An error occurred while toggling user status.");
+        }
     }
-}
 
-// Load users when the page loads
-loadUsers();
+    // Function to load users and add toggle button
+    async function loadUsers() {
+        try {
+            const token = getToken();
+            const response = await fetch("https://pos-ochre.vercel.app/api/auth/users", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
 
-    </script>
-    
+            const data = await response.json();
+            if (response.ok) {
+                const users = data.users;
+                const tableBody = document.getElementById("userTable").getElementsByTagName("tbody")[0];
+                tableBody.innerHTML = ""; // Clear previous data
+
+                users.forEach(user => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.role}</td>
+                        <td>${user.phone_number || "-"}</td>
+                        <td>${new Date(user.created_at).toLocaleString()}</td>
+                        <td>
+                            <button class="edit-btn" data-id="${user.id_users}" style="background: none; border: none; cursor: pointer;">
+                                <i class="fas fa-pencil-alt" style="color: #007bff;"></i>
+                            </button>
+                            <button class="toggle-status-btn" data-id="${user.id_users}" data-status="${user.is_active}" style="background: none; border: none; cursor: pointer;">
+                                <i class="fas ${user.is_active ? 'fa-toggle-on' : 'fa-toggle-off'}" style="color: ${user.is_active ? '#28a745' : '#dc3545'};"></i>
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                // Add event listeners for toggle buttons
+                document.querySelectorAll(".toggle-status-btn").forEach(button => {
+                    button.addEventListener("click", (e) => {
+                        const userId = e.target.closest("button").getAttribute("data-id"); // Ambil nilai id_users
+                        if (!userId) {
+                            console.error("User ID (id_users) not found!");
+                            return;
+                        }
+                        const currentStatus = e.target.closest("button").getAttribute("data-status") === "true";
+                        toggleUserStatus(userId, currentStatus);
+                    });
+                });
+            } else {
+                alert("Error: " + data.message);
+            }
+        } catch (err) {
+            console.error("Error loading users:", err);
+        }
+    }
+
+    // Load users when the page loads
+    loadUsers();
+</script>
+
 
 
 </body>
