@@ -1,0 +1,144 @@
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 20px;
+    margin-top: 120px; /* Memberikan jarak di bawah header */
+    gap: 30px; /* Memberikan jarak antara dua kolom */
+}
+
+.register-container {
+    width: 48%; /* Lebar form register sekitar setengah dari container */
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.user-table-container {
+    width: 48%; /* Lebar tabel sekitar setengah dari container */
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f4f4f4;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.register-container {
+    width: 48%; /* Lebar form register sekitar setengah dari container */
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.register-container h2 {
+    text-align: center;
+    color: #4CAF50;
+    margin-bottom: 20px;
+}
+
+#registerForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Jarak antar input dan tombol */
+}
+
+#registerForm input,
+#registerForm select {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
+#registerForm input:focus,
+#registerForm select:focus {
+    outline: none;
+    border-color: #4CAF50;
+}
+
+#registerForm button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#registerForm button:hover {
+    background-color: #45a049;
+}
+
+#registerForm input::placeholder {
+    color: #888;
+}
+
+#registerForm select {
+    font-size: 16px;
+}
+
+.register-container .error-message {
+    color: red;
+    font-size: 14px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .register-container {
+        width: 100%;
+    }
+
+    .container {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .register-container, .user-table-container {
+        width: 100%;
+    }
+}
+
