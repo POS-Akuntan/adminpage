@@ -15,6 +15,16 @@
     
       addCSS("https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.css");
     
+      // Fungsi untuk menyimpan token dari URL ke localStorage
+      function saveTokenFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get("token");
+        if (token) {
+          localStorage.setItem("token", token);
+          console.log("Token berhasil disimpan ke localStorage:", token);
+        } 
+      }
+  
       // Fungsi untuk melakukan validasi localStorage
       function validateLogin() {
         const token = localStorage.getItem("token");
@@ -30,11 +40,13 @@
           });
         }
       }
-    
-      // Panggil fungsi validasi saat halaman dimuat
-      document.addEventListener("DOMContentLoaded", validateLogin);
+  
+      // Panggil fungsi untuk menyimpan token dan validasi saat halaman dimuat
+      document.addEventListener("DOMContentLoaded", () => {
+        saveTokenFromURL();
+        validateLogin();
+      });
     </script>
-    
 
     <style>
       /* Reset dan Font Smoothing */
