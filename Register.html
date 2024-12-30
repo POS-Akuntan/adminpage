@@ -167,62 +167,63 @@
     }
 
     // Function to load users and add toggle button
-    async function loadUsers() {
-        try {
-            const token = getToken();
-            const response = await fetch("https://pos-ochre.vercel.app/api/auth/users", {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
+// Load users and add toggle button
+async function loadUsers() {
+    try {
+        const token = getToken();
+        const response = await fetch("https://pos-ochre.vercel.app/api/auth/users", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            const users = data.users;
+            const tableBody = document.getElementById("userTable").getElementsByTagName("tbody")[0];
+            tableBody.innerHTML = ""; // Clear previous data
+
+            users.forEach(user => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.role}</td>
+                    <td>${user.phone_number || "-"}</td>
+                    <td>${new Date(user.created_at).toLocaleString()}</td>
+                    <td>
+                        <button class="edit-btn" data-id="${user.id_users}" style="background: none; border: none; cursor: pointer;">
+                            <i class="fas fa-pencil-alt" style="color: #007bff;"></i>
+                        </button>
+                        <button class="toggle-status-btn" data-id="${user.id_users}" data-status="${user.is_active}" style="background: none; border: none; cursor: pointer;">
+                            <i class="fas ${user.is_active === "true" ? 'fa-toggle-on' : 'fa-toggle-off'}" style="color: ${user.is_active === "true" ? '#28a745' : '#dc3545'};"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
             });
 
-            const data = await response.json();
-            if (response.ok) {
-                const users = data.users;
-                const tableBody = document.getElementById("userTable").getElementsByTagName("tbody")[0];
-                tableBody.innerHTML = ""; // Clear previous data
-
-                users.forEach(user => {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
-                        <td>${user.role}</td>
-                        <td>${user.phone_number || "-"}</td>
-                        <td>${new Date(user.created_at).toLocaleString()}</td>
-                        <td>
-                            <button class="edit-btn" data-id="${user.id_users}" style="background: none; border: none; cursor: pointer;">
-                                <i class="fas fa-pencil-alt" style="color: #007bff;"></i>
-                            </button>
-                            <button class="toggle-status-btn" data-id="${user.id_users}" data-status="${user.is_active}" style="background: none; border: none; cursor: pointer;">
-                                <i class="fas ${user.is_active ? 'fa-toggle-on' : 'fa-toggle-off'}" style="color: ${user.is_active ? '#28a745' : '#dc3545'};"></i>
-                            </button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
+            // Add event listeners for toggle buttons
+            document.querySelectorAll(".toggle-status-btn").forEach(button => {
+                button.addEventListener("click", (e) => {
+                    const userId = e.target.closest("button").getAttribute("data-id"); // Ambil nilai id_users
+                    if (!userId) {
+                        console.error("User ID (id_users) not found!");
+                        return;
+                    }
+                    const currentStatus = e.target.closest("button").getAttribute("data-status") === "true";
+                    toggleUserStatus(userId, currentStatus);
                 });
-                
-
-                // Add event listeners for toggle buttons
-                document.querySelectorAll(".toggle-status-btn").forEach(button => {
-                    button.addEventListener("click", (e) => {
-                        const userId = e.target.closest("button").getAttribute("data-id"); // Ambil nilai id_users
-                        if (!userId) {
-                            console.error("User ID (id_users) not found!");
-                            return;
-                        }
-                        const currentStatus = e.target.closest("button").getAttribute("data-status") === "true";
-                        toggleUserStatus(userId, currentStatus);
-                    });
-                });
-            } else {
-                alert("Error: " + data.message);
-            }
-        } catch (err) {
-            console.error("Error loading users:", err);
+            });
+        } else {
+            alert("Error: " + data.message);
         }
+    } catch (err) {
+        console.error("Error loading users:", err);
     }
+}
+
 
     // Load users when the page loads
     loadUsers();
