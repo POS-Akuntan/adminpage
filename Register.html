@@ -87,6 +87,7 @@
                     <th>Role</th>
                     <th>Phone Number</th>
                     <th>Created At</th>
+                    <th>Status</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -192,6 +193,7 @@ async function loadUsers() {
                     <td>${user.role}</td>
                     <td>${user.phone_number || "-"}</td>
                     <td>${new Date(user.created_at).toLocaleString()}</td>
+                    <td>${user.is_active}</td>
                     <td>
                         <button class="edit-btn" data-id="${user.id_users}" style="background: none; border: none; cursor: pointer;">
                             <i class="fas fa-pencil-alt" style="color: #007bff;"></i>
