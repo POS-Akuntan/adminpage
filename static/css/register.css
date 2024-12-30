@@ -142,3 +142,10 @@ button:hover {
     }
 }
 
+.toggle-status-btn .fa-toggle-on {
+    color: #28a745; /* Warna hijau untuk status aktif */
+}
+
+.toggle-status-btn .fa-toggle-off {
+    color: #dc3545; /* Warna merah untuk status non-aktif */
+}
