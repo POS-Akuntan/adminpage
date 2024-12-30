@@ -9,7 +9,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
     <link rel="stylesheet" href="static/css/style.css" />
-    <script type="module">
+    <!-- <script type="module">
       import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11/src/sweetalert2.js";
       import { addCSS } from "https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.9/element.js";
     
@@ -33,7 +33,7 @@
     
       // Panggil fungsi validasi saat halaman dimuat
       document.addEventListener("DOMContentLoaded", validateLogin);
-    </script>
+    </script> -->
     
 
     <style>
@@ -402,23 +402,9 @@
       <!-- Business Performance -->
 
       <!-- Invoices Owed To You -->
-      <section class="card invoices">
-        <div id="invoicesOwedToYou">
-          <h2>Invoices Owed To You</h2>
-          <div id="invoicesOwed">
-            <!-- Saved invoices will be displayed here -->
-          </div>
-        </div>
-      </section>
 
-      <!-- Recent Transactions -->
-      <section class="card recent-transactions">
-        <h2>Recent Transactions</h2>
-        <ul id="transactions-list">
-          <!-- Data transaksi akan dimasukkan di sini -->
-        </ul>
-      </section>
 
+      <script src="static/js/product_sales.js"></script>
       <script>
         async function loadRecentTransactions() {
           try {
@@ -482,35 +468,7 @@
         loadRecentTransactions(); // Panggil fungsi untuk memuat transaksi terbaru
       </script>
 
-      <!-- Budget Overview -->
-      <section class="card budget-overview">
-        <h2>Budget Overview</h2>
-        <ul>
-          <li>Total Budget: 10,000.00</li>
-          <li>Spent: 4,500.00</li>
-          <li>Remaining: 5,500.00</li>
-        </ul>
-      </section>
 
-      <!-- Upcoming Payments -->
-      <section class="card upcoming-payments">
-        <h2>Upcoming Payments</h2>
-        <ul>
-          <li>Rent: 1,200.00 (Due: 2024-11-01)</li>
-          <li>Utilities: 300.00 (Due: 2024-11-05)</li>
-          <li>Subscription: 50.00 (Due: 2024-11-10)</li>
-        </ul>
-      </section>
-
-      <!-- Alerts & Notifications -->
-      <section class="card alerts">
-        <h2>Alerts & Notifications</h2>
-        <ul>
-          <li>Overdue Invoice: 1,000.00</li>
-          <li>Low Balance Alert: Checking Account</li>
-          <li>New Message from Accountant</li>
-        </ul>
-      </section>
 
       <!-- Quick Actions -->
       <section class="card quick-actions">
