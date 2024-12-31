@@ -45,11 +45,14 @@ function applyPagination(data, rowsPerPage = 8) {
         for (const transaction of paginatedData) {
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td>${transaction.id}</td>
+                <td>${transaction.id_transactions}</td>
                 <td>${new Date(transaction.transaction_date).toLocaleString()}</td>
                 <td>${transaction.user_name || "N/A"}</td>
                 <td>${transaction.total_amount}</td>
                 <td>${transaction.payment_method || "N/A"}</td>
+                <td>${transaction.customer_name || "N/A"}</td>
+                <td>${transaction.customer_phone || "N/A"}</td>
+                <td>${transaction.table_number || "N/A"}</td>
                 <td>
                     <button class="view-details-btn" onclick="fetchTransactionDetails('${transaction.id}')">
                         <i class="fas fa-search"></i>
@@ -90,7 +93,7 @@ async function fetchTransactionDetails(transactionId) {
             return;
         }
 
-        const response = await fetch(`https://pos-ochre.vercel.app/api/transaction-items/${transactionId}`, {
+        const response = await fetch(`https://pos-ochre.vercel.app/api/transaction-items/${id_transactions_items}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -110,16 +113,13 @@ async function fetchTransactionDetails(transactionId) {
             // Loop untuk semua produk dalam transaksi
             transactionDetails.forEach(transaction => {
                 detailsHtml += `
-                    <p><strong>ID:</strong> ${transaction.id_transactions}</p>
-                    <p><strong>Transaction ID:</strong> ${transaction.transaction_id}</p>
+                    <p><strong>Transaction ID:</strong> ${transaction.id_transaction}</p>
                     <p><strong>Product ID:</strong> ${transaction.product_id}</p>
                     <p><strong>Quantity:</strong> ${transaction.quantity}</p>
                     <p><strong>Unit Price:</strong> ${transaction.unit_price}</p>
                     <p><strong>Total Price:</strong> ${transaction.total_price}</p>
                     <p><strong>Product Name:</strong> ${transaction.product_name}</p>
-                    <p><strong>Customer:</strong>${transaction.customer_name}</P>
-                    <p><strong>Customer:</strong>${transaction.customer_phone}</P>
-                    <p><strong>Customer:</strong>${transaction.table_number}</P>
+
                     <hr>
                 `;
             });
