@@ -117,6 +117,9 @@ async function fetchTransactionDetails(transactionId) {
                     <p><strong>Unit Price:</strong> ${transaction.unit_price}</p>
                     <p><strong>Total Price:</strong> ${transaction.total_price}</p>
                     <p><strong>Product Name:</strong> ${transaction.product_name}</p>
+                    <p><strong>Customer:</strong>${transaction.customer_name}</P>
+                    <p><strong>Customer:</strong>${transaction.customer_phone}</P>
+                    <p><strong>Customer:</strong>${transaction.table_number}</P>
                     <hr>
                 `;
             });
