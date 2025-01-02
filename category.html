@@ -328,15 +328,16 @@
                 categories.forEach((category) => {
                     const row = document.createElement("tr");
                     row.innerHTML = `
-                        <td>${category.name}</td>
-                        <td>${category.description || "N/A"}</td>
-                        <td>
-                            <button class="edit-btn" onclick="editCategory('${category.id}', '${category.name}', '${category.description}')">Edit</button>
-                            <button class="delete-btn" onclick="deleteCategory('${category.id}')">Delete</button>
-                        </td>
+                      <td>${category.name}</td>
+                      <td>${category.description || "N/A"}</td>
+                      <td>
+                        <button class="edit-btn" onclick="editCategory('${category.id_categories}', '${category.name}', '${category.description}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteCategory('${category.id_categories}')">Delete</button>
+                      </td>
                     `;
                     categoryTableBody.appendChild(row);
-                });
+                  });
+                  
             } else {
                 throw new Error("Failed to fetch categories.");
             }
@@ -388,82 +389,71 @@
     // Fungsi untuk mengedit kategori
 // Edit category with a styled SweetAlert2 popup
 async function editCategory(categoryId, name, description) {
-    const { value: formValues } = await Swal.fire({
-        title: 'Edit Category',
-        html: `
-            <div style="padding: 10px 20px;">
-                <label for="edit-name" style="font-weight: bold;">Category Name</label>
-                <input id="edit-name" class="swal2-input" placeholder="Category Name" value="${name}" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 10px;" />
-                
-                <label for="edit-description" style="font-weight: bold;">Category Description</label>
-                <textarea id="edit-description" class="swal2-textarea" placeholder="Category Description" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; height: 100px;">${description}</textarea>
-            </div>
-        `,
-        focusConfirm: false,
-        confirmButtonText: 'Update',
-        cancelButtonText: 'Cancel',
-        showCancelButton: true,
-        customClass: {
-            confirmButton: 'btn-confirm',
-            cancelButton: 'btn-cancel'
-        },
-        preConfirm: () => {
-            return {
-                name: document.getElementById('edit-name').value,
-                description: document.getElementById('edit-description').value || null
-            };
-        },
-        backdrop: true,
-        showLoaderOnConfirm: true,
-        didOpen: () => {
-            // Customizing button styles directly
-            const buttons = document.querySelectorAll('.swal2-button');
-            buttons.forEach(button => {
-                button.style.borderRadius = '5px';
-                button.style.padding = '10px 20px';
-                button.style.border = 'none';
-                button.style.fontSize = '16px';
-            });
-
-            // Focus on the name field
-            document.getElementById('edit-name').focus();
-        }
-    });
-
-    if (formValues) {
-        const updatedCategory = {
-            name: formValues.name,
-            description: formValues.description
-        };
-
-        const token = localStorage.getItem("token");
-        if (!token) {
-            Swal.fire("Error", "Authorization token not found. Please log in.", "error");
-            return;
-        }
-
-        try {
-            const response = await fetch(`https://pos-ochre.vercel.app/api/categories/${categoryId}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(updatedCategory),
-            });
-
-            if (response.ok) {
-                Swal.fire("Success", "Category updated successfully!", "success");
-                fetchCategories(); // Refresh the category list
-            } else {
-                const errorMessage = await response.text();
-                throw new Error(`Failed to update category: ${errorMessage}`);
-            }
-        } catch (error) {
-            Swal.fire("Error", error.message, "error");
-        }
+    console.log("Editing category with ID:", categoryId);
+    console.log("Name:", name, "Description:", description);
+  
+    if (!categoryId) {
+      Swal.fire("Error", "Category ID is missing. Cannot update category.", "error");
+      return;
     }
-}
+  
+    const { value: formValues } = await Swal.fire({
+      title: 'Edit Category',
+      html: `
+        <div style="padding: 10px 20px;">
+          <label for="edit-name" style="font-weight: bold;">Category Name</label>
+          <input id="edit-name" class="swal2-input" placeholder="Category Name" value="${name}" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 10px;" />
+          <label for="edit-description" style="font-weight: bold;">Category Description</label>
+          <textarea id="edit-description" class="swal2-textarea" placeholder="Category Description" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; height: 100px;">${description}</textarea>
+        </div>
+      `,
+      focusConfirm: false,
+      confirmButtonText: 'Update',
+      cancelButtonText: 'Cancel',
+      showCancelButton: true,
+      preConfirm: () => {
+        return {
+          name: document.getElementById('edit-name').value,
+          description: document.getElementById('edit-description').value || null
+        };
+      },
+    });
+  
+    if (formValues) {
+      const updatedCategory = {
+        name: formValues.name,
+        description: formValues.description
+      };
+  
+      const token = localStorage.getItem("token");
+      if (!token) {
+        Swal.fire("Error", "Authorization token not found. Please log in.", "error");
+        return;
+      }
+  
+      try {
+        const response = await fetch(`https://pos-ochre.vercel.app/api/categories/${categoryId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedCategory),
+        });
+  
+        if (response.ok) {
+          Swal.fire("Success", "Category updated successfully!", "success");
+          fetchCategories(); // Refresh the category list
+        } else {
+          const errorMessage = await response.text();
+          throw new Error(`Failed to update category: ${errorMessage}`);
+        }
+      } catch (error) {
+        Swal.fire("Error", error.message, "error");
+      }
+    }
+  }
+  
 
 // Optionally add styles to improve button aesthetics
 const style = document.createElement('style');
