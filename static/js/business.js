@@ -54,10 +54,11 @@ function applyPagination(data, rowsPerPage = 8) {
                 <td>${transaction.customer_phone || "N/A"}</td>
                 <td>${transaction.table_number || "N/A"}</td>
                 <td>
-                    <button class="view-details-btn" onclick="fetchTransactionDetails('${transaction.id}')">
+                    <button class="view-details-btn" onclick="fetchTransactionDetails('${transaction.id_transactions}')">
                         <i class="fas fa-search"></i>
                     </button>
                 </td>
+
             `;
             salesTableBody.appendChild(row);
         }
@@ -83,61 +84,60 @@ function applyPagination(data, rowsPerPage = 8) {
 }
 
 
-// Fungsi untuk memanggil API detail transaksi
+// Fungsi untuk memanggil API id_transaction_item by id_transactions
 async function fetchTransactionDetails(transactionId) {
     console.log("Fetching transaction details for ID:", transactionId);
     try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            Swal.fire("Error", "Authorization token not found. Please log in.", "error");
-            return;
-        }
-
-        const response = await fetch(`https://pos-ochre.vercel.app/api/transaction-items/${id_transactions_items}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`, // Sertakan token di header
-            },
+      const token = localStorage.getItem("token");
+      if (!token) {
+        Swal.fire("Error", "Authorization token not found. Please log in.", "error");
+        return;
+      }
+  
+      const response = await fetch(`https://pos-ochre.vercel.app/api/transaction-items/${transactionId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, // Sertakan token di header
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to fetch transaction details");
+      }
+  
+      const transactionDetails = await response.json();
+      console.log("Transaction Details:", transactionDetails);
+  
+      if (transactionDetails.length > 0) {
+        let detailsHtml = '';
+        // Loop untuk semua produk dalam transaksi
+        transactionDetails.forEach(transaction => {
+          detailsHtml += `
+            <p><strong>Transaction ID:</strong> ${transaction.id_transaction_items}</p>
+            <p><strong>Product ID:</strong> ${transaction.id_products}</p>
+            <p><strong>Quantity:</strong> ${transaction.quantity}</p>
+            <p><strong>Unit Price:</strong> Rp ${transaction.unit_price.toLocaleString("id-ID")}</p>
+            <p><strong>Total Price:</strong> Rp ${transaction.total_price.toLocaleString("id-ID")}</p>
+            <p><strong>Product Name:</strong> ${transaction.product_name}</p>
+            <hr>
+          `;
         });
-
-        if (!response.ok) {
-            throw new Error("Failed to fetch transaction details");
-        }
-
-        const transactionDetails = await response.json();
-        console.log("Transaction Details:", transactionDetails);
-
-        if (transactionDetails.length > 0) {
-            let detailsHtml = '';
-            // Loop untuk semua produk dalam transaksi
-            transactionDetails.forEach(transaction => {
-                detailsHtml += `
-                    <p><strong>Transaction ID:</strong> ${transaction.id_transaction}</p>
-                    <p><strong>Product ID:</strong> ${transaction.product_id}</p>
-                    <p><strong>Quantity:</strong> ${transaction.quantity}</p>
-                    <p><strong>Unit Price:</strong> ${transaction.unit_price}</p>
-                    <p><strong>Total Price:</strong> ${transaction.total_price}</p>
-                    <p><strong>Product Name:</strong> ${transaction.product_name}</p>
-
-                    <hr>
-                `;
-            });
-
-            Swal.fire({
-                title: "Transaction Details",
-                html: detailsHtml,
-                icon: "info",
-            });
-        } else {
-            Swal.fire("Error", "No transaction details found.", "error");
-        }
-        
+  
+        Swal.fire({
+          title: "Transaction Details",
+          html: detailsHtml,
+          icon: "info",
+        });
+      } else {
+        Swal.fire("Info", "No transaction details found.", "info");
+      }
     } catch (error) {
-        console.error("Error fetching transaction details:", error);
-        Swal.fire("Error", "Failed to fetch transaction details", "error");
+      console.error("Error fetching transaction details:", error);
+      Swal.fire("Error", "Failed to fetch transaction details", "error");
     }
-}
+  }
+  
 
 
 // Ekspose fungsi ke global scope
