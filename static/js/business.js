@@ -77,7 +77,7 @@ function applyPagination(data, rowsPerPage = 8) {
         // Tombol panah kiri
         if (paginationGroup > 0) {
             const prevButton = document.createElement("button");
-            prevButton.textContent = "<-";
+            prevButton.textContent = "<--";
             prevButton.className = "pagination-button";
             prevButton.onclick = () => {
                 paginationGroup--;
@@ -102,7 +102,7 @@ function applyPagination(data, rowsPerPage = 8) {
         // Tombol panah kanan
         if (endPage < totalPages) {
             const nextButton = document.createElement("button");
-            nextButton.textContent = "->";
+            nextButton.textContent = "-->";
             nextButton.className = "pagination-button";
             nextButton.onclick = () => {
                 paginationGroup++;
