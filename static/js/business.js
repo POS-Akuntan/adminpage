@@ -43,11 +43,12 @@ function applyPagination(data, rowsPerPage = 8) {
         const start = (page - 1) * rowsPerPage;
         const end = start + rowsPerPage;
         const paginatedData = data.slice(start, end);
-
-        for (const transaction of paginatedData) {
+    
+        for (let i = 0; i < paginatedData.length; i++) {
+            const transaction = paginatedData[i];
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td>${transaction.id_transactions}</td>
+                <td>${start + i + 1}</td> <!-- Indeks dimulai dari 1 -->
                 <td>${new Date(transaction.transaction_date).toLocaleString()}</td>
                 <td>${transaction.user_name || "N/A"}</td>
                 <td>${transaction.total_amount}</td>
@@ -63,9 +64,10 @@ function applyPagination(data, rowsPerPage = 8) {
             `;
             salesTableBody.appendChild(row);
         }
-
+    
         updatePaginationButtons(page); // Update tombol pagination
     }
+    
 
     // Fungsi untuk memperbarui tombol pagination
     function updatePaginationButtons(activePage) {
@@ -226,6 +228,7 @@ async function fetchUsers() {
 }
 
 // Fungsi untuk statistik transaksi
+// Fungsi untuk statistik transaksi
 async function fetchStatistics() {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -248,42 +251,60 @@ async function fetchStatistics() {
 
         const transactions = await response.json();
 
-        const yesterday = new Date();
+        const today = new Date();
+        const todayStart = new Date(today.setHours(0, 0, 0, 0)); // Hari ini mulai pukul 00:00
+        const now = new Date(); // Waktu saat ini
+
+        const yesterday = new Date(today);
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayStart = new Date(yesterday.setHours(0, 0, 0, 0));
         const yesterdayEnd = new Date(yesterday.setHours(23, 59, 59, 999));
 
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - today.getDay()); // Hari Minggu sebagai awal minggu
+        weekStart.setHours(0, 0, 0, 0);
+
+        // Hitung pendapatan hari ini
+        const todayIncome = transactions
+            .filter((transaction) => {
+                const transactionDate = new Date(transaction.transaction_date);
+                return transactionDate >= todayStart && transactionDate <= now;
+            })
+            .reduce((total, transaction) => total + parseFloat(transaction.total_amount || 0), 0);
+
+        // Hitung pendapatan kemarin
         const yesterdayIncome = transactions
-            .filter(
-                (transaction) =>
-                    new Date(transaction.transaction_date) >= yesterdayStart &&
-                    new Date(transaction.transaction_date) <= yesterdayEnd
-            )
+            .filter((transaction) => {
+                const transactionDate = new Date(transaction.transaction_date);
+                return transactionDate >= yesterdayStart && transactionDate <= yesterdayEnd;
+            })
             .reduce((total, transaction) => total + parseFloat(transaction.total_amount || 0), 0);
 
-        const lastWeek = new Date();
-        lastWeek.setDate(lastWeek.getDate() - 7);
-        const lastWeekIncome = transactions
-            .filter(
-                (transaction) =>
-                    new Date(transaction.transaction_date) >= lastWeek &&
-                    new Date(transaction.transaction_date) <= yesterdayEnd
-            )
+        // Hitung pendapatan minggu ini
+        const weekIncome = transactions
+            .filter((transaction) => {
+                const transactionDate = new Date(transaction.transaction_date);
+                return transactionDate >= weekStart && transactionDate <= now;
+            })
             .reduce((total, transaction) => total + parseFloat(transaction.total_amount || 0), 0);
 
-        const highestIncome = transactions.reduce(
-            (max, transaction) => Math.max(max, parseFloat(transaction.total_amount || 0)),
-            0
-        );
-
-        document.querySelector(".stat-card:nth-child(1) p").innerText = `Rp ${yesterdayIncome.toLocaleString("id-ID")}`;
-        document.querySelector(".stat-card:nth-child(2) p").innerText = `Rp ${lastWeekIncome.toLocaleString("id-ID")}`;
-        document.querySelector(".stat-card:nth-child(3) p").innerText = `Rp ${highestIncome.toLocaleString("id-ID")}`;
+        // Tampilkan hasil di card
+        document.querySelector(".stat-card:nth-child(1) p").innerText = `Rp ${todayIncome.toLocaleString("id-ID")}`;
+        document.querySelector(".stat-card:nth-child(2) p").innerText = `Rp ${yesterdayIncome.toLocaleString("id-ID")}`;
+        document.querySelector(".stat-card:nth-child(3) p").innerText = `Rp ${weekIncome.toLocaleString("id-ID")}`;
     } catch (error) {
         console.error("Error fetching statistics:", error);
+
+        // Default nilai jika gagal
+        document.querySelector(".stat-card:nth-child(1) p").innerText = "Rp 0";
+        document.querySelector(".stat-card:nth-child(2) p").innerText = "Rp 0";
+        document.querySelector(".stat-card:nth-child(3) p").innerText = "Rp 0";
+
         Swal.fire("Error", "Failed to load statistics", "error");
     }
 }
+
+
 
 window.onload = () => {
     fetchTransactions();
