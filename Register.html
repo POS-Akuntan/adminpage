@@ -144,39 +144,40 @@
           return localStorage.getItem("token");
         }
       
-        // Function to handle user registration
-        document.getElementById("registerForm").addEventListener("submit", async (e) => {
-          e.preventDefault();
-      
-          const name = document.getElementById("name").value;
-          const email = document.getElementById("email").value;
-          const password = document.getElementById("password").value;
-          const role = document.getElementById("role").value;
-          const phone_number = document.getElementById("phone_number").value;
-          const token = getToken();
-      
-          try {
-            const response = await fetch("https://pos-ochre.vercel.app/api/auth/register", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({ name, email, password, role, phone_number }),
-            });
-      
-            const result = await response.json();
-            if (response.ok) {
-              Swal.fire("Success", result.message, "success");
-              loadUsers(); // Reload user data
-            } else {
-              Swal.fire("Error", result.message, "error");
-            }
-          } catch (err) {
-            console.error("Error during registration:", err);
-            Swal.fire("Error", "An error occurred during registration. Please try again.", "error");
-          }
-        });
+// Function to handle user registration
+document.getElementById("registerForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const role = document.getElementById("role").value;
+  const phone_number = document.getElementById("phone_number").value;
+  const token = getToken();
+
+  try {
+    const response = await fetch("https://pos-ochre.vercel.app/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ name, email, password, role, phone_number }),
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      await Swal.fire("Success", result.message, "success"); // Tunggu hingga Swal selesai
+      window.location.href = "Register.html"; // Redirect ke halaman Register.html
+    } else {
+      Swal.fire("Error", result.message, "error");
+    }
+  } catch (err) {
+    console.error("Error during registration:", err);
+    Swal.fire("Error", "An error occurred during registration. Please try again.", "error");
+  }
+});
+
       
         // Function to toggle user active status
         async function toggleUserStatus(userId, currentStatus) {
@@ -210,47 +211,56 @@
         function displayTablePage(page) {
             const startIndex = (page - 1) * rowsPerPage;
             const endIndex = startIndex + rowsPerPage;
-          
+        
             const tableBody = document.getElementById("userTable").querySelector("tbody");
             tableBody.innerHTML = ""; // Clear table before adding new rows
-          
+        
             allUsers.slice(startIndex, endIndex).forEach((user) => {
-              const row = document.createElement("tr");
-              row.innerHTML = `
-                <td>${user.name}</td>
-                <td>${user.email}</td>
-                <td>${user.role}</td>
-                <td>${user.phone_number || "-"}</td>
-                <td>${new Date(user.created_at).toLocaleString()}</td>
-                <td>${user.is_active}</td>
-                <td>
-                  <button class="edit-btn" data-id="${user.id_users}" style="background: none; border: none; cursor: pointer;">
-                    <i class="fas fa-pencil-alt" style="color: #007bff;"></i>
-                  </button>
-                  <button class="toggle-status-btn" data-id="${user.id_users}" data-status="${user.is_active}" style="background: none; border: none; cursor: pointer;">
-                    <i class="fas ${
-                      user.is_active === "true" ? "fa-toggle-on" : "fa-toggle-off"
-                    }" style="color: ${
-                user.is_active === "true" ? "#28a745" : "#dc3545"
-              };"></i>
-                  </button>
-                </td>
-              `;
-              tableBody.appendChild(row);
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.role}</td>
+                    <td>${user.phone_number || "-"}</td>
+                    <td>${new Date(user.created_at).toLocaleString()}</td>
+                    <td>${user.is_active}</td>
+                    <td>
+                        <button class="edit-btn" data-id="${user.id_users}" style="background: none; border: none; cursor: pointer;">
+                            <i class="fas fa-pencil-alt" style="color: #007bff;"></i>
+                        </button>
+                        <button class="toggle-status-btn" data-id="${user.id_users}" data-status="${user.is_active}" style="background: none; border: none; cursor: pointer;">
+                            <i class="fas ${
+                              user.is_active === "true" ? "fa-toggle-on" : "fa-toggle-off"
+                            }" style="color: ${
+                    user.is_active === "true" ? "#28a745" : "#dc3545"
+                  };"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
             });
-          
+        
+            // Tambahkan ulang event listener untuk tombol edit
+            document.querySelectorAll(".edit-btn").forEach((button) => {
+                button.addEventListener("click", (e) => {
+                    const userId = e.target.closest("button").getAttribute("data-id");
+                    editUser(userId); // Panggil fungsi editUser
+                });
+            });
+        
             // Tambahkan ulang event listener untuk toggle buttons
             document.querySelectorAll(".toggle-status-btn").forEach((button) => {
-              button.addEventListener("click", (e) => {
-                const userId = e.target.closest("button").getAttribute("data-id");
-                const currentStatus =
-                  e.target.closest("button").getAttribute("data-status") === "true";
-                toggleUserStatus(userId, currentStatus);
-              });
+                button.addEventListener("click", (e) => {
+                    const userId = e.target.closest("button").getAttribute("data-id");
+                    const currentStatus =
+                        e.target.closest("button").getAttribute("data-status") === "true";
+                    toggleUserStatus(userId, currentStatus);
+                });
             });
-          
+        
             updatePagination(page);
-          }
+        }
+        
           
       
         // Function to update pagination controls
@@ -300,41 +310,43 @@
             Swal.fire("Error", "Authorization token not found. Please log in.", "error");
             return;
           }
-      
+        
+          // Ambil data pengguna dari tabel frontend
+          const userRow = document.querySelector(`button[data-id="${userId}"]`).closest("tr");
+          const userName = userRow.children[0].textContent;
+          const userEmail = userRow.children[1].textContent;
+          const userRole = userRow.children[2].textContent;
+          const userPhoneNumber = userRow.children[3].textContent;
+        
           try {
-            // Fetch user data by ID
-            const response = await fetch(`https://pos-ochre.vercel.app/api/auth/users/${userId}`, {
-              method: "GET",
-              headers: { Authorization: `Bearer ${token}` },
-            });
-      
-            if (!response.ok) {
-              throw new Error("Failed to fetch user data");
-            }
-      
-            const user = await response.json();
-      
-            // Show SweetAlert2 modal for editing user
             const { value: formValues } = await Swal.fire({
               title: "Edit User",
               html: `
-                <label for="edit-name">Name</label>
-                <input id="edit-name" class="swal2-input" value="${user.name}" />
-      
-                <label for="edit-email">Email</label>
-                <input id="edit-email" class="swal2-input" value="${user.email}" />
-      
-                <label for="edit-role">Role</label>
-                <select id="edit-role" class="swal2-input">
-                  <option value="admin" ${user.role === "admin" ? "selected" : ""}>Admin</option>
-                  <option value="kasir" ${user.role === "kasir" ? "selected" : ""}>Kasir</option>
-                </select>
-      
-                <label for="edit-phone">Phone Number</label>
-                <input id="edit-phone" class="swal2-input" value="${user.phone_number}" />
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label for="edit-name" style="width: 30%; text-align: right; margin-right: 10px;">Name:</label>
+                    <input id="edit-name" class="swal2-input" style="width: 65%;" value="${userName}" />
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label for="edit-email" style="width: 30%; text-align: right; margin-right: 10px;">Email:</label>
+                    <input id="edit-email" class="swal2-input" style="width: 65%;" value="${userEmail}" />
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label for="edit-role" style="width: 25%; text-align: right; margin-right: 10px;">Role:</label>
+                    <select id="edit-role" class="swal2-input" style="width: 65%;">
+                      <option value="admin" ${userRole === "admin" ? "selected" : ""}>Admin</option>
+                      <option value="kasir" ${userRole === "kasir" ? "selected" : ""}>Kasir</option>
+                    </select>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label for="edit-phone" style="width: 30%; text-align: right; margin-right: 10px;">Phone Number:</label>
+                    <input id="edit-phone" class="swal2-input" style="width: 65%;" value="${userPhoneNumber}" />
+                  </div>
+                </div>
               `,
               showCancelButton: true,
               confirmButtonText: "Update",
+              width: "600px", // Perbesar lebar popup
               preConfirm: () => {
                 return {
                   name: document.getElementById("edit-name").value,
@@ -344,9 +356,10 @@
                 };
               },
             });
-      
+            
+            
             if (formValues) {
-              // Update user data
+              // Kirim data yang diperbarui ke server
               const updateResponse = await fetch(`https://pos-ochre.vercel.app/api/auth/users/${userId}`, {
                 method: "PUT",
                 headers: {
@@ -355,12 +368,13 @@
                 },
                 body: JSON.stringify(formValues),
               });
-      
+        
               if (updateResponse.ok) {
                 Swal.fire("Success", "User updated successfully!", "success");
-                loadUsers(); // Reload users
+                loadUsers(); // Reload data pengguna
               } else {
-                throw new Error("Failed to update user");
+                const errorData = await updateResponse.json();
+                throw new Error(errorData.message || "Failed to update user");
               }
             }
           } catch (error) {
@@ -368,6 +382,7 @@
             Swal.fire("Error", error.message, "error");
           }
         }
+        
       
         // Load users when the page loads
         loadUsers();

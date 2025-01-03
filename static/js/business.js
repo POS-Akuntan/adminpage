@@ -34,6 +34,8 @@ function applyPagination(data, rowsPerPage = 8) {
 
     const totalPages = Math.ceil(data.length / rowsPerPage);
     let currentPage = 1;
+    let paginationGroup = 0; // Grup pagination saat ini
+    const maxPagesVisible = 8; // Maksimal tombol pagination yang terlihat
 
     // Fungsi untuk menampilkan data per halaman
     function displayPage(page) {
@@ -58,30 +60,62 @@ function applyPagination(data, rowsPerPage = 8) {
                         <i class="fas fa-search"></i>
                     </button>
                 </td>
-
             `;
             salesTableBody.appendChild(row);
         }
+
+        updatePaginationButtons(page); // Update tombol pagination
     }
 
-    // Fungsi untuk membuat tombol pagination
-    function createPaginationButtons() {
-        for (let i = 1; i <= totalPages; i++) {
+    // Fungsi untuk memperbarui tombol pagination
+    function updatePaginationButtons(activePage) {
+        paginationContainer.innerHTML = ""; // Clear existing buttons
+
+        const startPage = paginationGroup * maxPagesVisible + 1;
+        const endPage = Math.min(startPage + maxPagesVisible - 1, totalPages);
+
+        // Tombol panah kiri
+        if (paginationGroup > 0) {
+            const prevButton = document.createElement("button");
+            prevButton.textContent = "<-";
+            prevButton.className = "pagination-button";
+            prevButton.onclick = () => {
+                paginationGroup--;
+                updatePaginationButtons(activePage);
+            };
+            paginationContainer.appendChild(prevButton);
+        }
+
+        // Tombol pagination
+        for (let i = startPage; i <= endPage; i++) {
             const button = document.createElement("button");
             button.textContent = i;
             button.className = "pagination-button";
+            if (i === activePage) button.style.backgroundColor = "#97ced1"; // Highlight active page
             button.onclick = () => {
                 currentPage = i;
                 displayPage(currentPage);
             };
             paginationContainer.appendChild(button);
         }
+
+        // Tombol panah kanan
+        if (endPage < totalPages) {
+            const nextButton = document.createElement("button");
+            nextButton.textContent = "->";
+            nextButton.className = "pagination-button";
+            nextButton.onclick = () => {
+                paginationGroup++;
+                updatePaginationButtons(activePage);
+            };
+            paginationContainer.appendChild(nextButton);
+        }
     }
 
     // Inisialisasi halaman pertama
     displayPage(currentPage);
-    createPaginationButtons();
 }
+
 
 
 // Fungsi untuk memanggil API id_transaction_item by id_transactions
