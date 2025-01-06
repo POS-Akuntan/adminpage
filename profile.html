@@ -7,50 +7,65 @@
     <link rel="stylesheet" href="static/css/profile.css">
 </head>
 <body>
-    <div class="profile-page">
-        <div class="content">
-          <div class="content__cover">
+  <div class="profile-page">
+    <div class="content">
+        <div class="content__cover">
             <div class="content__bull">
-              <span></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span><span></span>
             </div>
-          </div>
-          <div class="content__actions">
-            <a href="Edit_profile.html">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
-                <path fill="currentColor" d="M192 256A112 112 0 1 0 80 144a111.94 111.94 0 0 0 112 112zm76.8 32h-8.3a157.53 157.53 0 0 1-68.5 16c-24.6 0-47.6-6-68.5-16h-8.3A115.23 115.23 0 0 0 0 403.2V432a48 48 0 0 0 48 48h288a48 48 0 0 0 48-48v-28.8A115.23 115.23 0 0 0 268.8 288z"></path>
-                <path fill="currentColor" d="M480 256a96 96 0 1 0-96-96 96 96 0 0 0 96 96zm48 32h-3.8c-13.9 4.8-28.6 8-44.2 8s-30.3-3.2-44.2-8H432c-20.4 0-39.2 5.9-55.7 15.4 24.4 26.3 39.7 61.2 39.7 99.8v38.4c0 2.2-.5 4.3-.6 6.4H592a48 48 0 0 0 48-48 111.94 111.94 0 0 0-112-112z"></path>
-              </svg>
-              <span>Edit Profile</span>
+        </div>
+        <div class="content__actions">
+            <a href="#" id="changePasswordBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                    <path fill="currentColor" d="M192 256A112 112 0 1 0 80 144a111.94 111.94 0 0 0 112 112zm76.8 32h-8.3a157.53 157.53 0 0 1-68.5 16c-24.6 0-47.6-6-68.5-16h-8.3A115.23 115.23 0 0 0 0 403.2V432a48 48 0 0 0 48 48h288a48 48 0 0 0 48-48v-28.8A115.23 115.23 0 0 0 268.8 288z"></path>
+                    <path fill="currentColor" d="M480 256a96 96 0 1 0-96-96 96 96 0 0 0 96 96zm48 32h-3.8c-13.9 4.8-28.6 8-44.2 8s-30.3-3.2-44.2-8H432c-20.4 0-39.2 5.9-55.7 15.4 24.4 26.3 39.7 61.2 39.7 99.8v38.4c0 2.2-.5 4.3-.6 6.4H592a48 48 0 0 0 48-48 111.94 111.94 0 0 0-112-112z"></path>
+                </svg>
+                <span>Change Password</span>
             </a>
-          </div>
-          <div class="content__title">
+        </div>
+        <div class="content__title">
             <main class="container">
-              <div class="row justify-content-center mt-5">
-                <div class="col-md-6">
-                  <div class="card text-center">
-                    <div class="card-body">
-                      <h3 id="userGreeting">Hello, User!</h3>
-                      <p id="userEmail" class="text-muted">user@example.com</p>
-                      <p id="userRole" class="fw-bold">Role: User</p>
+                <div class="row justify-content-center mt-5">
+                    <div class="col-md-6">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 id="userGreeting">Hello, User!</h3>
+                                <p id="userEmail" class="text-muted">user@example.com</p>
+                                <p id="userRole" class="fw-bold">Role: User</p>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </div>
-          </div>
-          <div class="content__button">
+            </main>
+        </div>
+        <div class="content__button">
             <a class="button" href="index.html">
-              <div class="button__border"></div>
-              <div class="button__bg"></div>
-              <p class="button__text">Back to Main Menu</p>
+                <div class="button__border"></div>
+                <div class="button__bg"></div>
+                <p class="button__text">Back to Main Menu</p>
             </a>
-          </div>
         </div>
-        <div class="bg">
-          <div>
+    </div>
+    <div class="bg">
+        <div>
             <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-          </div>
         </div>
-      </div>
+    </div>
+</div>
+
+<!-- Modal untuk Change Password -->
+<div id="changePasswordModal" class="modal">
+    <div class="modal-content">
+        <h3>Change Password</h3>
+        <form id="changePasswordForm">
+            <label for="oldPassword">Old Password:</label>
+            <input type="password" id="oldPassword" placeholder="Enter old password" required />
+            <label for="newPassword">New Password:</label>
+            <input type="password" id="newPassword" placeholder="Enter new password" required />
+            <button type="submit" class="btn">Change Password</button>
+        </form>
+    </div>
+</div>
 
       <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -93,6 +108,88 @@
             console.warn("Token not found in localStorage.");
           }
         });
+      </script>
+      <script type="module">
+        import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11/src/sweetalert2.js";
+        import { addCSS } from "https://cdn.jsdelivr.net/gh/jscroot/lib@0.0.9/element.js";
+        
+        addCSS("https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.css");
+
+        document.addEventListener("DOMContentLoaded", () => {
+          const changePasswordBtn = document.getElementById("changePasswordBtn");
+          const changePasswordModal = document.getElementById("changePasswordModal");
+          const changePasswordForm = document.getElementById("changePasswordForm");
+          const token = localStorage.getItem("token");
+      
+          // Buka modal saat tombol di klik
+          changePasswordBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              changePasswordModal.style.display = "block";
+          });
+      
+          // Tangani form submit untuk ubah password
+          changePasswordForm.addEventListener("submit", async (e) => {
+              e.preventDefault();
+      
+              const oldPassword = document.getElementById("oldPassword").value;
+              const newPassword = document.getElementById("newPassword").value;
+      
+              if (!oldPassword || !newPassword) {
+                  Swal.fire("Error", "All fields are required!", "error");
+                  return;
+              }
+      
+              try {
+                  const parseJwt = (token) => {
+                      const base64Url = token.split(".")[1];
+                      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+                      const jsonPayload = decodeURIComponent(
+                          atob(base64)
+                              .split("")
+                              .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+                              .join("")
+                      );
+                      return JSON.parse(jsonPayload);
+                  };
+      
+                  const userData = parseJwt(token);
+                  const userId = userData.id_users;
+      
+                  const response = await fetch(
+                      `https://pos-ochre.vercel.app/api/auth/users/${userId}/change-password`,
+                      {
+                          method: "PUT",
+                          headers: {
+                              "Content-Type": "application/json",
+                              Authorization: `Bearer ${token}`,
+                          },
+                          body: JSON.stringify({ oldPassword, newPassword }),
+                      }
+                  );
+      
+                  const result = await response.json();
+      
+                  if (response.ok) {
+                      Swal.fire("Success", result.message, "success");
+                      changePasswordModal.style.display = "none";
+                      changePasswordForm.reset();
+                  } else {
+                      Swal.fire("Error", result.message || "Failed to change password", "error");
+                  }
+              } catch (error) {
+                  console.error("Error changing password:", error);
+                  Swal.fire("Error", "An unexpected error occurred.", "error");
+              }
+          });
+      
+          // Tutup modal jika klik di luar modal
+          window.onclick = (event) => {
+              if (event.target === changePasswordModal) {
+                  changePasswordModal.style.display = "none";
+              }
+          };
+      });
+      
       </script>
 </body>
 </html>

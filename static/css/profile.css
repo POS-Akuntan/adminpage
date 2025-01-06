@@ -617,6 +617,74 @@
   .theme-switcher-wrapper [data-theme="blue"] {
     background: #1d8cf8;
   }
+
+/* changepassword */
+/* Pastikan modal tampil di atas elemen lain */
+.modal {
+  display: none; /* Tersembunyi secara default */
+  position: fixed; /* Tetap di posisi layar */
+  z-index: 9999; /* Pastikan modal di atas semua elemen */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto; /* Scroll jika konten lebih besar */
+  background-color: rgba(0, 0, 0, 0.5); /* Warna latar belakang */
+  padding-top: 60px; /* Jarak dari atas */
+}
+
+/* Konten modal */
+.modal-content {
+  background-color: #fff;
+  margin: auto; /* Tampilkan di tengah layar */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px; /* Batas lebar maksimal */
+  border-radius: 10px;
+  position: relative;
+  z-index: 10000;
+  text-align: left;
+}
+
+/* Header modal */
+.modal-content h3 {
+  margin-bottom: 20px;
+}
+
+/* Form input */
+.modal-content label {
+  display: block;
+  margin: 10px 0 5px;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+/* Tombol submit */
+.modal-content .btn {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.modal-content .btn:hover {
+  background-color: #0056b3;
+}
+
+
+
   @-moz-keyframes floating {
     0% {
       -webkit-transform: rotate(0deg) translate(-10px) rotate(0deg);
