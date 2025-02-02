@@ -154,13 +154,15 @@ async function fetchTransactionDetails(transactionId) {
         transactionDetails.forEach(transaction => {
           detailsHtml += `
             <p><strong>Quantity:</strong> ${transaction.quantity}</p>
-            <p><strong>Unit Price:</strong> Rp ${transaction.unit_price.toLocaleString("id-ID")}</p>
-            <p><strong>Total Price:</strong> Rp ${transaction.total_price.toLocaleString("id-ID")}</p>
+            <p>Unit Price:</strong> Rp ${parseInt(transaction.unit_price).toLocaleString("id-ID")}</p>
+            <td>Total Price:</strong> Rp ${parseInt(transaction.total_price).toLocaleString("id-ID")}</td>
+
             <p><strong>Product Name:</strong> ${transaction.product_name}</p>
             <hr>
           `;
         });
-  
+        //<p><strong>Unit Price:</strong> Rp ${transaction.unit_price.toLocaleString("id-ID")}</p>
+        //<p><strong>Total Price:</strong> Rp ${transaction.total_price.toLocaleString("id-ID")}</p>
         Swal.fire({
           title: "Transaction Details",
           html: detailsHtml,
