@@ -30,28 +30,31 @@ async function fetchTransactions() {
 function applyPagination(data, rowsPerPage = 8) {
     const paginationContainer = document.getElementById("paginationContainer");
     const salesTableBody = document.getElementById("salesTableBody");
-    paginationContainer.innerHTML = ""; // Clear pagination buttons
+    paginationContainer.innerHTML = "";
 
     const totalPages = Math.ceil(data.length / rowsPerPage);
     let currentPage = 1;
-    let paginationGroup = 0; // Grup pagination saat ini
-    const maxPagesVisible = 8; // Maksimal tombol pagination yang terlihat
+    let paginationGroup = 0; // Tambahkan variabel paginationGroup
+    const maxPagesVisible = 8; // Maksimum tombol pagination yang ditampilkan
 
-    // Fungsi untuk menampilkan data per halaman
     function displayPage(page) {
-        salesTableBody.innerHTML = ""; // Clear current rows
+        salesTableBody.innerHTML = "";
         const start = (page - 1) * rowsPerPage;
         const end = start + rowsPerPage;
         const paginatedData = data.slice(start, end);
-    
-        for (let i = 0; i < paginatedData.length; i++) {
-            const transaction = paginatedData[i];
+
+        if (paginatedData.length === 0) {
+            salesTableBody.innerHTML = "<tr><td colspan='9'>No data available.</td></tr>";
+            return;
+        }
+
+        paginatedData.forEach((transaction, i) => {
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td>${start + i + 1}</td> <!-- Indeks dimulai dari 1 -->
+                <td>${start + i + 1}</td>
                 <td>${new Date(transaction.transaction_date).toLocaleString()}</td>
                 <td>${transaction.user_name || "N/A"}</td>
-                <td>${transaction.total_amount}</td>
+                <td>Rp ${parseInt(transaction.total_amount).toLocaleString("id-ID")}</td>
                 <td>${transaction.payment_method || "N/A"}</td>
                 <td>${transaction.customer_name || "N/A"}</td>
                 <td>${transaction.customer_phone || "N/A"}</td>
@@ -63,37 +66,36 @@ function applyPagination(data, rowsPerPage = 8) {
                 </td>
             `;
             salesTableBody.appendChild(row);
-        }
-    
-        updatePaginationButtons(page); // Update tombol pagination
-    }
-    
+        });
 
-    // Fungsi untuk memperbarui tombol pagination
+        updatePaginationButtons(page);
+    }
+
     function updatePaginationButtons(activePage) {
-        paginationContainer.innerHTML = ""; // Clear existing buttons
+        paginationContainer.innerHTML = "";
 
         const startPage = paginationGroup * maxPagesVisible + 1;
         const endPage = Math.min(startPage + maxPagesVisible - 1, totalPages);
 
-        // Tombol panah kiri
+        // Tombol Previous (<<)
         if (paginationGroup > 0) {
             const prevButton = document.createElement("button");
             prevButton.textContent = "<";
             prevButton.className = "pagination-button";
             prevButton.onclick = () => {
                 paginationGroup--;
-                updatePaginationButtons(activePage);
+                updatePaginationButtons(startPage - maxPagesVisible);
+                displayPage(startPage - maxPagesVisible);
             };
             paginationContainer.appendChild(prevButton);
         }
 
-        // Tombol pagination
+        // Tombol Pagination (1, 2, 3, ... maxPagesVisible)
         for (let i = startPage; i <= endPage; i++) {
             const button = document.createElement("button");
             button.textContent = i;
             button.className = "pagination-button";
-            if (i === activePage) button.style.backgroundColor = "#97ced1"; // Highlight active page
+            if (i === activePage) button.style.backgroundColor = "#97ced1"; // Highlight page aktif
             button.onclick = () => {
                 currentPage = i;
                 displayPage(currentPage);
@@ -101,22 +103,23 @@ function applyPagination(data, rowsPerPage = 8) {
             paginationContainer.appendChild(button);
         }
 
-        // Tombol panah kanan
+        // Tombol Next (>>)
         if (endPage < totalPages) {
             const nextButton = document.createElement("button");
             nextButton.textContent = ">";
             nextButton.className = "pagination-button";
             nextButton.onclick = () => {
                 paginationGroup++;
-                updatePaginationButtons(activePage);
+                updatePaginationButtons(endPage + 1);
+                displayPage(endPage + 1);
             };
             paginationContainer.appendChild(nextButton);
         }
     }
 
-    // Inisialisasi halaman pertama
     displayPage(currentPage);
 }
+
 
 
 
